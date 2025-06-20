@@ -359,11 +359,65 @@ function viewSavedResult() {
             </li>`).join("")
           : "<li>No matches yet – stay tuned!</li>"}
       </ul>
+      <button class="btn btn-primary mb-4" onclick="shareResultImage()">Share as Image</button>
       <div class="flex flex-col gap-4 w-full max-w-xs mx-auto">
         <button class="btn btn-secondary" onclick="renderIntro()">Back to Start</button>
         <button class="btn btn-primary" onclick="clearSavedResultAndRetake()">Retake Quiz</button>
       </div>
-    </div>`;
+    </div>
+
+    <!-- 🆕  Hidden share card – 3:4 poster ratio, airy layout -->
+    <div id="share-card"
+         style="width:1200px;height:1600px;position:fixed;left:-9999px;top:0;
+                background:#FFFBE6;z-index:-1;pointer-events:none;
+                display:flex;align-items:center;justify-content:center;">
+      <div style="width:940px;padding:72px 64px;
+                  background:white;border-radius:56px;
+                  box-shadow:0 16px 64px rgba(246,223,0,.25);
+                  display:flex;flex-direction:column;align-items:center;">
+
+        <img src='assets/concert.jpg' crossorigin="anonymous" alt='Concert hall'
+             style="width:620px;height:350px;object-fit:cover;border-radius:32px;margin-bottom:48px;">
+
+        <div style="font-family:'Maison Neue',sans-serif;font-size:72px;
+                    text-transform:uppercase;letter-spacing:.14em;
+                    color:#F6DF00;margin-bottom:32px;text-align:center;">
+          ${pers.title}
+        </div>
+
+        <div style="font-family:'PPEditorialNew',serif;font-size:38px;
+                    line-height:1.3;color:#222;text-align:center;
+                    max-width:760px;margin-bottom:56px;">
+          ${pers.blurb}
+        </div>
+
+        <div style="width:100%;margin-bottom:56px;">
+          ${renderMetricsBarsForImage(scores)}
+        </div>
+
+        <div style="font-family:'Maison Neue',sans-serif;font-size:34px;
+                    letter-spacing:.08em;text-transform:uppercase;
+                    color:#222;margin-bottom:24px;">
+          Concert Picks
+        </div>
+
+        <ul style="width:100%;list-style:none;padding:0;margin:0 0 48px 0;">
+          ${recs.length
+            ? recs.map(c=>`<li style="
+                  margin-bottom:24px;padding:26px 32px;border-radius:24px;
+                  background:#FFFBE6;border:3px solid #F6DF00;">
+                  <div style="font-weight:800;font-size:32px;color:#222;">${c.title}</div>
+                  <div style="font-size:24px;color:#666;margin-top:6px;">${c.date} – ${c.venue}</div>
+                </li>`).join("")
+            : "<li style='font-size:28px;color:#888;'>No matches yet – stay tuned!</li>"}
+        </ul>
+
+        <div style="font-family:'PPEditorialNew',serif;font-size:26px;color:#999;">
+          mphil.de/quiz
+        </div>
+      </div>
+    </div>
+  `;
 }
 
 // Helper: Render metrics as colored bars
