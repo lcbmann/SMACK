@@ -1,5 +1,55 @@
+/* Custom font faces */
+@font-face {
+  font-family: 'Maison Neue';
+  src: url('fonts/maison-neue-bold.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'PPEditorialNew';
+  src: url('fonts/PPEditorialNew-Regular-BF644b214ff145f.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'PPEditorialNew';
+  src: url('fonts/PPEditorialNew-Italic-BF644b214fb0c0a.otf') format('opentype');
+  font-weight: normal;
+  font-style: italic;
+}
+@font-face {
+  font-family: 'PPEditorialNew';
+  src: url('fonts/PPEditorialNew-Ultrabold-BF644b21500840c.otf') format('opentype');
+  font-weight: 800;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'PPEditorialNew';
+  src: url('fonts/PPEditorialNew-UltraboldItalic-BF644b214faef01.otf') format('opentype');
+  font-weight: 800;
+  font-style: italic;
+}
+@font-face {
+  font-family: 'PPEditorialNew';
+  src: url('fonts/PPEditorialNew-Ultralight-BF644b21500d0c0.otf') format('opentype');
+  font-weight: 200;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'PPEditorialNew';
+  src: url('fonts/PPEditorialNew-UltralightItalic-BF644b214ff1e9b.otf') format('opentype');
+  font-weight: 200;
+  font-style: italic;
+}
+
 /* Base font */
 body {
+  font-family: "Maison Neue", system-ui, sans-serif;
+}
+.font-head {
+  font-family: "PPEditorialNew", "Maison Neue", system-ui, sans-serif;
+}
+.font-body {
   font-family: "Maison Neue", system-ui, sans-serif;
 }
 
