@@ -1,0 +1,41 @@
+/* Base font */
+body {
+  font-family: "Maison Neue", system-ui, sans-serif;
+}
+
+/* ----------  Cards  ---------- */
+.card {
+  background-color: #f9fafb;      /* bg-gray-50    */
+  border: 1px solid #e5e7eb;      /* border-gray-200 */
+  border-radius: 1rem;            /* rounded-2xl   */
+  padding: 1.5rem;                /* p-6           */
+  transition: box-shadow .2s;
+}
+.card:hover      { box-shadow: 0 4px 6px rgba(0,0,0,.10); }
+.card-selected   {
+  border-color: #facc15;          /* border-yellow-400 */
+  background:    #fefce8;         /* bg-yellow-100     */
+}
+.card-icon {
+  width: 3rem; height: 3rem;
+  border-radius: 9999px;
+  display:flex; align-items:center; justify-content:center;
+  margin-bottom: 1rem;
+  background: rgba(0,0,0,.10);    /* bg-black/10  */
+}
+.card-selected .card-icon { background:#fde047; } /* bg-yellow-300 */
+
+/* ----------  Buttons  ---------- */
+.btn {
+  font-weight:600;
+  padding:1rem 2rem;              /* py-4 px-8     */
+  border-radius:1rem;             /* rounded-2xl   */
+  transition:transform .2s, background-color .2s, opacity .2s;
+}
+.btn:hover       { transform:translateY(-2px); }
+
+.btn-yellow      { background:#fde047; color:#000; }   /* bg-yellow-300 */
+.btn-yellow:hover{ background:#facc15; }               /* bg-yellow-400 */
+
+.btn-secondary   { background:rgba(0,0,0,.10); color:#000; } /* bg-black/10 */
+.btn-secondary:hover{ background:rgba(0,0,0,.20);}           /* bg-black/20 */
