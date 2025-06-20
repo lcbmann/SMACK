@@ -89,6 +89,7 @@ let currentIndex = 0;
    ──────────────────────────────────────────────────────────────*/
 function renderIntro() {
   answers = {}; currentIndex = 0;
+  const saved = getSavedResult();
   quizContainer.innerHTML = /*html*/`
     <section class="relative max-w-2xl w-full mx-auto bg-white/90 rounded-3xl shadow-2xl px-8 py-12 flex flex-col items-center animate-fadein">
       <div class="absolute -top-6 left-1/2 -translate-x-1/2 w-24 h-2 bg-[var(--mphil-yellow)] rounded-full shadow-lg"></div>
@@ -99,7 +100,14 @@ function renderIntro() {
         Find out which concert vibe suits you best – and get personalised
         tips from the Münchner&nbsp;Philharmoniker programme.
       </p>
-      <button class="btn btn-primary mt-2 shadow-lg" onclick="startQuiz()">Start Quiz</button>
+      ${saved ? `
+        <div class="flex flex-col gap-4 w-full max-w-xs mx-auto">
+          <button class="btn btn-primary shadow-lg" onclick="viewSavedResult()">View Your Result</button>
+          <button class="btn btn-secondary shadow-lg" onclick="clearSavedResultAndRetake()">Retake Quiz</button>
+        </div>
+      ` : `
+        <button class="btn btn-primary mt-2 shadow-lg" onclick="startQuiz()">Take the Quiz</button>
+      `}
     </section>`;
 }
 
@@ -242,23 +250,193 @@ function computePersonality(){
 function renderResults(){
   const pers = computePersonality();
   const recs = CONCERTS[pers.id] || [];
+  const scores = calcScores();
+  saveResult({pers, recs, answers});
+
   quizContainer.innerHTML = /*html*/`
     <div class="max-w-xl mx-auto text-center animate-fadein">
       <h2 class="text-4xl font-head mb-6">${pers.title}</h2>
-      <p class="text-lg text-gray-700 mb-10 font-body">${pers.blurb}</p>
+      <p class="text-lg text-gray-700 mb-8 font-body">${pers.blurb}</p>
+
+      <h3 class="text-2xl font-head mb-4">Your Profile</h3>
+      <div class="mb-10 space-y-3">
+        ${renderMetricsBars(scores)}
+      </div>
 
       <h3 class="text-2xl font-head mb-4">Recommended Concerts</h3>
       <ul class="space-y-3 mb-12">
         ${recs.length
-          ? recs.map(c=>`<li class="border p-4 text-left">
+          ? recs.map(c=>`<li class="border p-4 text-left flex flex-col gap-1">
               <span class="block font-semibold">${c.title}</span>
               <span class="text-sm text-gray-500">${c.date} – ${c.venue}</span>
+              <a href="https://www.mphil.de/en/concerts-tickets/calendar/concerts/debussy-francaix-ravel-2025-06-22-4598" target="_blank" rel="noopener" class="text-[var(--mphil-yellow)] underline text-sm mt-1">View details</a>
             </li>`).join("")
           : "<li>No matches yet – stay tuned!</li>"}
       </ul>
 
-      <button class="btn btn-secondary" onclick="renderIntro()">Retake Quiz</button>
+      <button class="btn btn-primary mb-4" onclick="shareResultImage()">Share as Image</button>
+      <button class="btn btn-secondary" onclick="renderIntro()">Back to Start</button>
+    </div>
+
+    <!-- 🆕  Hidden share card – 3:4 poster ratio, airy layout -->
+    <div id="share-card"
+         style="width:1200px;height:1600px;position:fixed;left:-9999px;top:0;
+                background:#FFFBE6;z-index:-1;pointer-events:none;
+                display:flex;align-items:center;justify-content:center;">
+      <div style="width:940px;padding:72px 64px;
+                  background:white;border-radius:56px;
+                  box-shadow:0 16px 64px rgba(246,223,0,.25);
+                  display:flex;flex-direction:column;align-items:center;">
+
+        <img src='assets/concert.jpg' crossorigin="anonymous" alt='Concert hall'
+             style="width:620px;height:350px;object-fit:cover;border-radius:32px;margin-bottom:48px;">
+
+        <div style="font-family:'Maison Neue',sans-serif;font-size:72px;
+                    text-transform:uppercase;letter-spacing:.14em;
+                    color:#F6DF00;margin-bottom:32px;text-align:center;">
+          ${pers.title}
+        </div>
+
+        <div style="font-family:'PPEditorialNew',serif;font-size:38px;
+                    line-height:1.3;color:#222;text-align:center;
+                    max-width:760px;margin-bottom:56px;">
+          ${pers.blurb}
+        </div>
+
+        <div style="width:100%;margin-bottom:56px;">
+          ${renderMetricsBarsForImage(scores)}
+        </div>
+
+        <div style="font-family:'Maison Neue',sans-serif;font-size:34px;
+                    letter-spacing:.08em;text-transform:uppercase;
+                    color:#222;margin-bottom:24px;">
+          Concert Picks
+        </div>
+
+        <ul style="width:100%;list-style:none;padding:0;margin:0 0 48px 0;">
+          ${recs.length
+            ? recs.map(c=>`<li style="
+                  margin-bottom:24px;padding:26px 32px;border-radius:24px;
+                  background:#FFFBE6;border:3px solid #F6DF00;">
+                  <div style="font-weight:800;font-size:32px;color:#222;">${c.title}</div>
+                  <div style="font-size:24px;color:#666;margin-top:6px;">${c.date} – ${c.venue}</div>
+                </li>`).join("")
+            : "<li style='font-size:28px;color:#888;'>No matches yet – stay tuned!</li>"}
+        </ul>
+
+        <div style="font-family:'PPEditorialNew',serif;font-size:26px;color:#999;">
+          mphil.de/quiz
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function viewSavedResult() {
+  const saved = getSavedResult();
+  if (!saved) return renderIntro();
+  const { pers, recs, answers: savedAnswers } = saved;
+  // Recalculate scores in case metrics changed
+  const scores = calcScoresFrom(savedAnswers);
+
+  quizContainer.innerHTML = /*html*/`
+    <div class="max-w-xl mx-auto text-center animate-fadein">
+      <h2 class="text-4xl font-head mb-6">${pers.title}</h2>
+      <p class="text-lg text-gray-700 mb-8 font-body">${pers.blurb}</p>
+
+      <h3 class="text-2xl font-head mb-4">Your Profile</h3>
+      <div class="mb-10 space-y-3">
+        ${renderMetricsBars(scores)}
+      </div>
+
+      <h3 class="text-2xl font-head mb-4">Recommended Concerts</h3>
+      <ul class="space-y-3 mb-12">
+        ${recs.length
+          ? recs.map(c=>`<li class="border p-4 text-left flex flex-col gap-1">
+              <span class="block font-semibold">${c.title}</span>
+              <span class="text-sm text-gray-500">${c.date} – ${c.venue}</span>
+              <a href="https://www.mphil.de/en/concerts-tickets/calendar/concerts/debussy-francaix-ravel-2025-06-22-4598" target="_blank" rel="noopener" class="text-[var(--mphil-yellow)] underline text-sm mt-1">View details</a>
+            </li>`).join("")
+          : "<li>No matches yet – stay tuned!</li>"}
+      </ul>
+      <div class="flex flex-col gap-4 w-full max-w-xs mx-auto">
+        <button class="btn btn-secondary" onclick="renderIntro()">Back to Start</button>
+        <button class="btn btn-primary" onclick="clearSavedResultAndRetake()">Retake Quiz</button>
+      </div>
     </div>`;
+}
+
+// Helper: Render metrics as colored bars
+function renderMetricsBars(scores) {
+  // Pick a color for each metric (extend as needed)
+  const palette = [
+    "bg-yellow-300",
+    "bg-blue-300",
+    "bg-pink-300",
+    "bg-green-300",
+    "bg-purple-300",
+    "bg-orange-300",
+    "bg-red-300"
+  ];
+  // Find min/max for normalization
+  const vals = Object.values(scores);
+  const min = Math.min(...vals, 0);
+  const max = Math.max(...vals, 1);
+
+  return METRICS.map((metric, i) => {
+    const val = scores[metric];
+    // Normalize width: always at least 10%, up to 100%
+    const width = max === min ? 100 : Math.max(10, ((val - min) / (max - min)) * 100);
+    const color = palette[i % palette.length];
+    // Label: Capitalize first letter
+    const label = metric.charAt(0).toUpperCase() + metric.slice(1);
+    return `
+      <div class="flex items-center gap-3">
+        <span class="w-24 text-left font-head text-sm text-gray-700">${label}</span>
+        <div class="flex-1 h-5 rounded-full bg-gray-200 overflow-hidden">
+          <div class="${color} h-5 rounded-full transition-all" style="width:${width}%"></div>
+        </div>
+        <span class="w-8 text-right font-mono text-sm text-gray-600">${val}</span>
+      </div>
+    `;
+  }).join("");
+}
+
+// Helper: Calculate scores from a given answers object (for saved results)
+function calcScoresFrom(ans) {
+  const scores = Object.fromEntries(METRICS.map(m=>[m,0]));
+  QUESTIONS.forEach(q=>{
+    if(!ans[q.id]) return;
+    if(q.type==="choice"||q.type==="image"){
+      const opt=q.options.find(o=>o.value===ans[q.id]);
+      if(opt?.effects){
+        for(const [m,delta] of Object.entries(opt.effects)){
+          if(m in scores) scores[m]+=delta;
+        }
+      }
+    }
+  });
+  return scores;
+}
+
+// Save result to localStorage
+function saveResult(data) {
+  localStorage.setItem("mphil-quiz-result", JSON.stringify(data));
+}
+
+// Get saved result from localStorage
+function getSavedResult() {
+  try {
+    return JSON.parse(localStorage.getItem("mphil-quiz-result"));
+  } catch {
+    return null;
+  }
+}
+
+// Clear saved result and retake quiz
+function clearSavedResultAndRetake() {
+  localStorage.removeItem("mphil-quiz-result");
+  startQuiz();
 }
 
 /* ──────────────────────────────────────────────────────────────
@@ -272,3 +450,45 @@ window.goBack          = goBack;
 window.goNext          = goNext;
 window.handleTextInput = handleTextInput;
 window.renderIntro     = renderIntro;
+window.viewSavedResult = viewSavedResult;
+window.clearSavedResultAndRetake = clearSavedResultAndRetake;
+window.shareResultImage = shareResultImage;
+
+// Helper for pretty bars in the share image
+function renderMetricsBarsForImage(scores) {
+  const palette = [
+    "#F6DF00", "#7DD3FC", "#F9A8D4", "#6EE7B7", "#C4B5FD", "#FDBA74", "#FCA5A5"
+  ];
+  const vals = Object.values(scores);
+  const min = Math.min(...vals, 0);
+  const max = Math.max(...vals, 1);
+  return METRICS.map((metric, i) => {
+    const val = scores[metric];
+    const width = max === min ? 100 : Math.max(10, ((val - min) / (max - min)) * 100);
+    const color = palette[i % palette.length];
+    const label = metric.charAt(0).toUpperCase() + metric.slice(1);
+    return `
+      <div style="display:flex;align-items:center;gap:18px;margin-bottom:18px;">
+        <span style="width:180px;text-align:left;font-family:'Maison Neue',sans-serif;font-size:22px;color:#222;">${label}</span>
+        <div style="flex:1;height:32px;border-radius:16px;background:#eee;overflow:hidden;">
+          <div style="height:32px;border-radius:16px;background:${color};width:${width}%"></div>
+        </div>
+        <span style="width:48px;text-align:right;font-family:monospace;font-size:22px;color:#666;">${val}</span>
+      </div>
+    `;
+  }).join("");
+}
+
+function shareResultImage() {
+  const card = document.getElementById('share-card');
+  if (!card) return;
+  card.style.display = 'flex';
+  html2canvas(card, {backgroundColor: null, useCORS: true, scale: 2}).then(canvas => {
+    card.style.display = 'none';
+    // Download the image or open in new tab for sharing
+    const link = document.createElement('a');
+    link.download = 'mphil-quiz-result.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+  });
+}
