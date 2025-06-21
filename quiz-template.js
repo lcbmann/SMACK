@@ -974,7 +974,21 @@ window.setLangAndRerender = setLangAndRerender;
 
 document.addEventListener("click", function(e) {
   const btn = document.getElementById("lang-toggle-btn");
+  const dropdown = document.getElementById("lang-dropdown");
+  if (!btn || !dropdown) return;
+
+  // If the globe button is clicked, toggle the dropdown
+  if (btn.contains(e.target)) {
+    dropdown.classList.toggle("hidden");
+    return;
+  }
+
+  // If click is outside the dropdown, hide it
+  if (!dropdown.contains(e.target)) {
+    dropdown.classList.add("hidden");
+  }
 });
+
 
 // Add this helper at the bottom of the file (or in the global window assignment section)
 window.setSliderValue = function(id, val, idx) {
