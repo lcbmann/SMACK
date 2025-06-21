@@ -2,56 +2,58 @@
 # coding: utf-8
 """
 wandelt die Tabelle „Concerts.numbers“ (oder .xlsx/.csv) in eine
-JavaScript-Datei concerts.js um.  Exportiert:
-  • DEFAULT_CONCERT_LINK
-  • CONCERTS                     (inkl. TExp / REnergy als Integer | null)
+JavaScript-Datei concerts.js um. Die JS-Datei exportiert:
+  • DEFAULT_CONCERT_LINK   (Fallback-URL)
+  • CONCERTS               (Array aller Konzert-Objekte)
+
+NEU (06/2025)
+  • Spalten **TExp** und **REnergy** (ganzzahlig) werden übernommen.
 """
 
-import json, re, pathlib
+import json
+import re
+import pathlib
 import pandas as pd
 
 try:
-    from numbers_parser import Document
+    from numbers_parser import Document  # Apple-Numbers
 except ImportError:
-    Document = None
+    Document = None  # Skript läuft ohne
 
-# ───── Konfiguration ──────────────────────────────────────────
-SRC_FILE  = "Concerts.numbers"          # oder .xlsx / .csv
+# ─────────────── Konfiguration ──────────────────────────────────
+SRC_FILE  = "Concerts.numbers"  # oder .xlsx / .csv
 DEST_FILE = "concerts.js"
 DEFAULT_CONCERT_LINK = (
     "https://www.mphil.de/konzerte-und-karten/kalender-2024-2025#j44933"
 )
 
-# ───── 1) Datei einlesen ─────────────────────────────────────
+# ─────────────── 1) Datei einlesen ──────────────────────────────
 suffix = pathlib.Path(SRC_FILE).suffix.lower()
 
 if suffix == ".numbers":
     if Document is None:
-        raise RuntimeError("numbers_parser fehlt – `pip install numbers-parser`")
+        raise RuntimeError(
+            "numbers_parser nicht installiert – `pip install numbers-parser`"
+        )
     doc   = Document(SRC_FILE)
     sheet = doc.sheets[0]
     tbl   = sheet.tables[0]
     data  = list(tbl.rows(values_only=True))
     hdr   = [str(c).strip() for c in data[0]]
     df    = pd.DataFrame(data[1:], columns=hdr)
-else:                                   # .xlsx, .xls, .csv …
+else:  # .xlsx, .xls, .csv …
     df = pd.read_excel(SRC_FILE, dtype=str).fillna("")
 
+# Spaltennamen harmonisieren
 df.columns = df.columns.str.strip().str.lower()
+# ─── Hier füllen wir alle NaN mit leeren Strings auf ─────────────
+df = df.fillna("")
 
-# ───── 2) Mapping ────────────────────────────────────────────
+# ─────────────── 2) Mapping-Funktion ────────────────────────────
 def map_row(r: pd.Series) -> dict:
+    """holt Spaltenwerte case-insensitiv, liefert »« oder 0, falls leer"""
     g  = lambda col, default="": r.get(col.lower(), default)
-
-    # robustes Integer-Parsing ( "", None, "1800", "1800.0" → int | None )
-    def gi(col):
-        raw = str(g(col, "")).strip().replace(" ", "").replace(" ", "")  # evtl. geschützte Leerzeichen
-        if not raw:
-            return None
-        try:
-            return int(float(raw))
-        except ValueError:
-            return None
+    gi = lambda col: int(g(col) or 0)
 
     return {
         "date":               g("date"),
@@ -64,28 +66,31 @@ def map_row(r: pd.Series) -> dict:
         "title":              g("title"),
         "composers":          g("composer"),
         "composerGivenNames": g("given names composer"),
-        "titles":             g("title"),                # legacy
+        "titles":             g("title"),
         "duration":           g("duration"),
         "soloistsLastNames":  g("last names soloists"),
         "soloistsGivenNames": g("given names solioist(s)"),
         "instruments":        g("instrument(s)"),
-        "conductorLastName":   g("conductor"),
-        "conductorGivenNames": g("given names conductors"),
+        "conductorLastName":  g("conductor"),
+        "conductorGivenNames":g("given names conductors"),
         "capacity":           gi("capacity"),
 
-        # ── NEU ──
+        # ────── NEU: zwei numerische Felder ──────
         "TExp":               gi("texp"),
         "REnergy":            gi("renergy"),
 
-        # Link aus Tabelle oder Fallback
+        # Link aus der Tabelle → sonst Fallback
         "link":               g("link", "DEFAULT_CONCERT_LINK")
     }
 
 concerts = [map_row(r) for _, r in df.iterrows()]
 
-# ───── 3) JS-Export ──────────────────────────────────────────
+# ─────────────── 3) JS-Export bauen ─────────────────────────────
 json_block = json.dumps(concerts, indent=2, ensure_ascii=False)
-json_block = re.sub(r'"([A-Za-z_][A-Za-z0-9_]*)":', r'\1:', json_block)
+
+# Keys ohne Anführungszeichen (JS-Object-Literal)
+json_block = re.sub(r'\"([A-Za-z_][A-Za-z0-9_]*)\":', r'\1:', json_block)
+# Platzhalter ersetzen
 json_block = json_block.replace('"DEFAULT_CONCERT_LINK"', 'DEFAULT_CONCERT_LINK')
 
 js_text = f"""export const DEFAULT_CONCERT_LINK = "{DEFAULT_CONCERT_LINK}";
