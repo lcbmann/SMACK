@@ -436,7 +436,7 @@ function renderResults() {
   const archetypeImg = `assets/archetypes/${archetype.id}.png`;
 
   // Get concerts for this archetype using the new filter logic
-  const recs = getConcertsForResult(archetype.id);
+  const recs = getConcertsForResult(archetype.id, subtypeKey);
 
   /* persist */
   saveResult({ archetypeId: archetype.id, recs, answers });
