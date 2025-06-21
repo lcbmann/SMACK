@@ -156,40 +156,18 @@ export const QUESTIONS = [
       }
     ]
   },
-  // 2. Pink bg, blue answers, black text
+  // 2. Social Battery Slider (with energy effect, new question text)
   {
-    id: "q2",
-    type: "choice",
+    id: "qSocialBattery",
+    type: "slider",
     text: {
-      en: "What kind of concert vibe do you enjoy?",
-      de: "Welche Konzertatmosphäre gefällt Ihnen?"
+      en: "What's your energy level before a concert?",
+      de: "Wie hoch ist Ihr Energielevel vor einem Konzert?"
     },
-    shapeImg: "assets/shapes/shapes4.png",
-    shapePos: "bottom-left",
-    nextBg: COLORS.yellow,
-    nextText: COLORS.black,
-    options: [
-      {
-        value: "tradition",
-        label: { en: "Tradition-Oriented", de: "Traditionsbewusst" },
-        description: {
-          en: "Classic setup, timeless works",
-          de: "Klassischer Rahmen, zeitlose Werke"
-        },
-        icon: "fas fa-university",
-        effects: { tradition: +2 }
-      },
-      {
-        value: "discovery",
-        label: { en: "Open to Discovery", de: "Offen für Neues" },
-        description: {
-          en: "Fresh formats, new works",
-          de: "Frische Formate, neue Werke"
-        },
-        icon: "fas fa-flask",
-        effects: { tradition: -2 }
-      }
-    ]
+    // Add a function to compute effects based on the slider value
+    effects: value => ({
+      energy: value - 3  // 1 → -2, 3 → 0, 6 → +3
+    })
   },
   // 3. Blue bg, orange answers, black text
   {
@@ -269,7 +247,42 @@ export const QUESTIONS = [
       }
     ]
   },
-  // 5. Purple bg, yellow answers, black text
+  // 5. Pink bg, blue answers, black text (was q2, now here)
+  {
+    id: "q2",
+    type: "choice",
+    text: {
+      en: "What kind of concert vibe do you enjoy?",
+      de: "Welche Konzertatmosphäre gefällt Ihnen?"
+    },
+    shapeImg: "assets/shapes/shapes4.png",
+    shapePos: "bottom-left",
+    nextBg: COLORS.yellow,
+    nextText: COLORS.black,
+    options: [
+      {
+        value: "tradition",
+        label: { en: "Tradition-Oriented", de: "Traditionsbewusst" },
+        description: {
+          en: "Classic setup, timeless works",
+          de: "Klassischer Rahmen, zeitlose Werke"
+        },
+        icon: "fas fa-university",
+        effects: { tradition: +2 }
+      },
+      {
+        value: "discovery",
+        label: { en: "Open to Discovery", de: "Offen für Neues" },
+        description: {
+          en: "Fresh formats, new works",
+          de: "Frische Formate, neue Werke"
+        },
+        icon: "fas fa-flask",
+        effects: { tradition: -2 }
+      }
+    ]
+  },
+  // 6. Purple bg, yellow answers, black text
   {
     id: "q5",
     type: "choice",
@@ -287,7 +300,7 @@ export const QUESTIONS = [
       { value: "morning", label: { en: "Morning", de: "Morgens" } }
     ]
   },
-  // 6. Yellow bg, black answers, white text
+  // 7. Yellow bg, black answers, white text
   {
     id: "q6",
     type: "choice",
