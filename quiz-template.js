@@ -138,7 +138,7 @@ function renderQuestion(i) {
       <section class="relative w-full min-h-screen overflow-hidden" style="background:${bgColor};">
         <img src="assets/logo.png" alt="Logo" class="absolute top-4 left-4 z-20 w-12 h-12 object-contain pointer-events-none" />
         ${shapeImgHtml}
-        <div class="flex flex-col items-center w-full min-h-screen pt-24 pb-12${shouldAnimate ? ' animate-fadein' : ''}">
+        <div class="flex flex-col items-center w-full min-h-screen pt-20 pb-32${shouldAnimate ? ' animate-fadein' : ''}">
           <div class="mb-4 text-black font-serif" style="font-family:'PP Editorial New',serif;font-size:14px;">
             ${t("question", i + 1, QUESTIONS.length)}
           </div>
@@ -186,22 +186,24 @@ function renderQuestion(i) {
             }).join("")}
           </div>
         </div>
-        <div class="absolute left-0 w-full flex justify-between px-8 z-20" style="bottom: 80px;">
-          <button
-            class="rounded font-bold font-head px-5 py-2 text-[14px] transition
-              ${i === 0 ? 'opacity-50 pointer-events-none' : ''}"
-            style="background:${nextBg};color:${nextText};"
-            onclick="goBack()"
-            ${i === 0 ? 'disabled' : ''}
-          >&lt; ${t("previous")}</button>
-          <button
-            class="rounded font-bold font-head px-5 py-2 text-[14px] transition
-              ${hasAnswer ? '' : 'opacity-50 pointer-events-none'}"
-            style="background:${nextBg};color:${nextText};"
-            id="next-btn"
-            onclick="goNext(${i})"
-            ${hasAnswer ? '' : 'disabled'}
-          >${t("next")} &gt;</button>
+        <div class="fixed left-0 w-full flex justify-between px-8 z-30 pointer-events-none" style="bottom:120px;">
+          <div class="flex gap-4 w-full justify-between pointer-events-auto">
+            <button
+              class="rounded font-bold font-head px-5 py-2 text-[14px] transition
+                ${i === 0 ? 'opacity-50 pointer-events-none' : ''}"
+              style="background:${nextBg};color:${nextText};"
+              onclick="goBack()"
+              ${i === 0 ? 'disabled' : ''}
+            >&lt; ${t("previous")}</button>
+            <button
+              class="rounded font-bold font-head px-5 py-2 text-[14px] transition
+                ${hasAnswer ? '' : 'opacity-50 pointer-events-none'}"
+              style="background:${nextBg};color:${nextText};"
+              id="next-btn"
+              onclick="goNext(${i})"
+              ${hasAnswer ? '' : 'disabled'}
+            >${t("next")} &gt;</button>
+          </div>
         </div>
       </section>
     `;
@@ -220,15 +222,15 @@ function renderQuestion(i) {
       <section class="relative w-full min-h-screen overflow-hidden" style="background:${bgColor};">
         <img src="assets/logo.png" alt="Logo" class="absolute top-4 left-4 z-20 w-12 h-12 object-contain pointer-events-none" />
         ${shapeImgHtml}
-        <div class="flex flex-col items-center w-full min-h-screen pt-24 pb-12${shouldAnimate ? ' animate-fadein' : ''}">
-          <div class="mb-4 text-black font-serif" style="font-family:'PP Editorial New',serif;font-size:14px;">
-            ${t("question", i + 1, QUESTIONS.length)}
-          </div>
-          <div class="mb-8 w-full flex justify-center">
-            <h3 class="text-black text-2xl sm:text-3xl font-serif text-center mx-auto max-w-xs" style="font-family:'PP Editorial New',serif;font-weight:400;">
-              ${q.text[LANG]}
-            </h3>
-          </div>
+        <div class="flex flex-col items-center w-full min-h-screen pt-20 pb-32${shouldAnimate ? ' animate-fadein' : ''}">
+  <div class="mb-4 text-black font-serif" style="font-family:'PP Editorial New',serif;font-size:14px;">
+    ${t("question", i + 1, QUESTIONS.length)}
+  </div>
+  <div class="mb-8 w-full flex justify-center">
+    <h3 class="text-black text-2xl sm:text-3xl font-serif text-center mx-auto max-w-xs" style="font-family:'PP Editorial New',serif;font-weight:400;">
+      ${q.text[LANG]}
+    </h3>
+  </div>
           <div class="flex flex-col items-center gap-4 w-full max-w-md mx-auto mt-8">
             <div
               class="relative flex items-center justify-center select-none"
@@ -271,20 +273,21 @@ function renderQuestion(i) {
             </div>
           </div>
         </div>
-        <div class="absolute left-0 w-full flex justify-between px-8 z-20" style="bottom: 80px;">
-          <button
-            class="rounded font-bold font-head px-5 py-2 text-[14px] transition
-              ${i === 0 ? 'opacity-50 pointer-events-none' : ''}"
-            style="background:${nextBg};color:${nextText};"
-            onclick="goBack()"
-            ${i === 0 ? 'disabled' : ''}
-          >&lt; ${t("previous")}</button>
-          <button
-            class="rounded font-bold font-head px-5 py-2 text-[14px] transition"
-            style="background:${nextBg};color:${nextText};"
-            id="next-btn"
-            onclick="goNext(${i})"
-          >${t("next")} &gt;</button>
+        <div class="fixed left-0 w-full flex justify-between px-8 z-30 pointer-events-none" style="bottom:120px;">
+          <div class="flex gap-4 w-full justify-between pointer-events-auto">
+            <button
+              class="rounded font-bold font-head px-5 py-2 text-[14px] transition
+                ${i === 0 ? 'opacity-50 pointer-events-none' : ''}"
+              style="background:${nextBg};color:${nextText};"
+              onclick="goBack()"
+              ${i === 0 ? 'disabled' : ''}
+            >&lt; ${t("previous")}</button>
+            <button
+              class="rounded font-bold font-head px-5 py-2 text-[14px] transition"
+              style="background:${nextBg};color:${nextText};"
+              id="next-btn"
+              onclick="goNext(${i})"
+            >${t("next")} &gt;</button>
         </div>
       </section>
     `;
@@ -356,49 +359,52 @@ function renderQuestion(i) {
       <section class="relative w-full min-h-screen overflow-hidden" style="background:${bgColor};">
         <img src="assets/logo.png" alt="Logo" class="absolute top-4 left-4 z-20 w-12 h-12 object-contain pointer-events-none" />
         ${shapeImgHtml}
-        <div class="flex flex-col items-center w-full min-h-screen pt-24 pb-12${shouldAnimate ? ' animate-fadein' : ''}">
-          <div class="mb-4 text-black font-serif" style="font-family:'PP Editorial New',serif;font-size:14px;">
-            ${t("question", i + 1, QUESTIONS.length)}
-          </div>
-          <div class="mb-8 w-full flex justify-center">
-            <h3 class="text-black text-2xl sm:text-3xl font-serif text-center mx-auto max-w-xs" style="font-family:'PP Editorial New',serif;font-weight:400;">
-              ${q.text[LANG]}
-            </h3>
-          </div>
-          <div class="w-full flex flex-wrap justify-center gap-6 mb-16 mt-8">
-            ${q.options.map((opt, idx) => {
-              const selected = selectedAnswers === opt.value;
-              return `
-                <button
-                  class="border-4 ${selected ? 'border-yellow-400' : 'border-transparent'} rounded-lg overflow-hidden transition-all duration-150 focus:outline-none"
-                  style="width:140px;height:180px;background:#fff;"
-                  onclick="selectAnswer('${q.id}','${opt.value}',${i},false)"
-                >
-                  <img src="${opt.img}" alt="" class="object-cover w-full h-full" />
-                </button>
-              `;
-            }).join("")}
-          </div>
-        </div>
-        <div class="absolute left-0 w-full flex justify-between px-8 z-20" style="bottom: 140px;">
-          <button
-            class="rounded font-bold font-head px-5 py-2 text-[14px] transition
-              ${i === 0 ? 'opacity-50 pointer-events-none' : ''}"
-            style="background:${nextBg};color:${nextText};"
-            onclick="goBack()"
-            ${i === 0 ? 'disabled' : ''}
-          >&lt; ${t("previous")}</button>
-          <button
-            class="rounded font-bold font-head px-5 py-2 text-[14px] transition
-              ${hasAnswer ? '' : 'opacity-50 pointer-events-none'}"
-            style="background:${nextBg};color:${nextText};"
-            id="next-btn"
-            onclick="goNext(${i})"
-            ${hasAnswer ? '' : 'disabled'}
-          >${t("next")} &gt;</button>
-        </div>
-      </section>
-    `;
+        <div class="flex flex-col items-center w-full min-h-screen pt-20 pb-32${shouldAnimate ? ' animate-fadein' : ''}">
+  <div class="mb-4 text-black font-serif" style="font-family:'PP Editorial New',serif;font-size:14px;">
+    ${t("question", i + 1, QUESTIONS.length)}
+  </div>
+  <div class="mb-8 w-full flex justify-center">
+    <h3 class="text-black text-2xl sm:text-3xl font-serif text-center mx-auto max-w-xs" style="font-family:'PP Editorial New',serif;font-weight:400;">
+      ${q.text[LANG]}
+    </h3>
+  </div>
+      <div class="w-full flex flex-wrap justify-center gap-6 mb-8 mt-4">
+        ${q.options.map((opt, idx) => {
+          const selected = selectedAnswers === opt.value;
+          return `
+            <button
+              class="quiz-answer-btn border-4 ${selected ? 'border-yellow-400' : 'border-transparent'} rounded-lg overflow-hidden transition-all duration-150 focus:outline-none"
+              style="background:#fff;width:180px;height:220px;max-width:90vw;"
+              onclick="selectAnswer('${q.id}','${opt.value}',${i},false)"
+            >
+              <img src="${opt.img}" alt="" class="object-cover w-full h-full" style="width:100%;height:100%;object-fit:cover;" />
+              ${opt.label ? `<div class="mt-2 text-sm font-head text-center">${opt.label[LANG] || ""}</div>` : ""}
+            </button>
+          `;
+        }).join("")}
+      </div>
+    </div>
+    <div class="fixed left-0 w-full flex justify-between px-8 z-30 pointer-events-none" style="bottom:120px;">
+      <div class="flex gap-4 w-full justify-between pointer-events-auto">
+        <button
+          class="rounded font-bold font-head px-5 py-2 text-[14px] transition
+            ${i === 0 ? 'opacity-50 pointer-events-none' : ''}"
+          style="background:${nextBg};color:${nextText};"
+          onclick="goBack()"
+          ${i === 0 ? 'disabled' : ''}
+        >&lt; ${t("previous")}</button>
+        <button
+          class="rounded font-bold font-head px-5 py-2 text-[14px] transition
+            ${hasAnswer ? '' : 'opacity-50 pointer-events-none'}"
+          style="background:${nextBg};color:${nextText};"
+          id="next-btn"
+          onclick="goNext(${i})"
+          ${hasAnswer ? '' : 'disabled'}
+        >${t("next")} &gt;</button>
+      </div>
+    </div>
+  </section>
+`;
     return;
   }
 
@@ -407,7 +413,7 @@ function renderQuestion(i) {
     <section class="relative w-full min-h-screen overflow-hidden" style="background:${bgColor};">
       <img src="assets/logo.png" alt="Logo" class="absolute top-4 left-4 z-20 w-12 h-12 object-contain pointer-events-none" />
       ${shapeImgHtml}
-      <div class="flex flex-col items-center w-full min-h-screen pt-24 pb-12${shouldAnimate ? ' animate-fadein' : ''}">
+      <div class="flex flex-col items-center w-full min-h-screen pt-20 pb-32${shouldAnimate ? ' animate-fadein' : ''}">
         <div class="mb-4 text-black font-serif" style="font-family:'PP Editorial New',serif;font-size:14px;">
           ${t("question", i + 1, QUESTIONS.length)}
         </div>
@@ -454,22 +460,24 @@ function renderQuestion(i) {
           }).join("")}
         </div>
       </div>
-      <div class="absolute left-0 w-full flex justify-between px-8 z-20" style="bottom: 140px;">
-        <button
-          class="rounded font-bold font-head px-5 py-2 text-[14px] transition
-            ${i === 0 ? 'opacity-50 pointer-events-none' : ''}"
-          style="background:${nextBg};color:${nextText};"
-          onclick="goBack()"
-          ${i === 0 ? 'disabled' : ''}
-        >&lt; ${t("previous")}</button>
-        <button
-          class="rounded font-bold font-head px-5 py-2 text-[14px] transition
-            ${hasAnswer ? '' : 'opacity-50 pointer-events-none'}"
-          style="background:${nextBg};color:${nextText};"
-          id="next-btn"
-          onclick="goNext(${i})"
-          ${hasAnswer ? '' : 'disabled'}
-        >${t("next")} &gt;</button>
+      <div class="fixed left-0 w-full flex justify-between px-8 z-30 pointer-events-none" style="bottom:120px;">
+        <div class="flex gap-4 w-full justify-between pointer-events-auto">
+          <button
+            class="rounded font-bold font-head px-5 py-2 text-[14px] transition
+              ${i === 0 ? 'opacity-50 pointer-events-none' : ''}"
+            style="background:${nextBg};color:${nextText};"
+            onclick="goBack()"
+            ${i === 0 ? 'disabled' : ''}
+          >&lt; ${t("previous")}</button>
+          <button
+            class="rounded font-bold font-head px-5 py-2 text-[14px] transition
+              ${hasAnswer ? '' : 'opacity-50 pointer-events-none'}"
+            style="background:${nextBg};color:${nextText};"
+            id="next-btn"
+            onclick="goNext(${i})"
+            ${hasAnswer ? '' : 'disabled'}
+          >${t("next")} &gt;</button>
+        </div>
       </div>
     </section>
   `;

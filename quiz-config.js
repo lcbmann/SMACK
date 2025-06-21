@@ -265,12 +265,12 @@ export const QUESTIONS = [
       {
         value: "nightowl",
         label: { en: "Night owl", de: "Nachteule" },
-        icon: "fa-solid fa-moon"
+        img: "assets/nightowl.png"
       },
       {
         value: "earlybird",
         label: { en: "Early bird", de: "Frühaufsteher" },
-        icon: "fa-solid fa-dove"
+        img: "assets/earlybird.png"
       }
     ]
   },
