@@ -59,7 +59,7 @@ function renderIntro() {
       </div>
 
       <!-- Main content -->
-      <div class="relative z-20 flex flex-col items-center justify-center w-full">
+     <div class="relative z-20 flex flex-col items-center justify-center w-full animate-fadein">
         <div class="text-white text-center font-head text-2xl sm:text-3xl md:text-3xl lg:text-4xl mb-6 drop-shadow-lg tracking-tight uppercase mx-auto max-w-sm" style="letter-spacing:.12em;">
           ${t("whichConcertType")}
         </div>
@@ -123,6 +123,9 @@ function renderQuestion(i) {
     }
   }
 
+  // Only animate on first render of the question, not on answer selection
+  const shouldAnimate = !hasAnswer;
+
   quizContainer.innerHTML = /*html*/`
     <section class="relative w-full min-h-screen overflow-hidden" style="background:${bgColor};">
       <!-- Small logo in top left -->
@@ -131,7 +134,7 @@ function renderQuestion(i) {
       <!-- Per-question shape image -->
       ${shapeImgHtml}
 
-      <div class="flex flex-col items-center w-full min-h-screen pt-24 pb-12">
+      <div class="flex flex-col items-center w-full min-h-screen pt-24 pb-12${shouldAnimate ? ' animate-fadein' : ''}">
         <!-- Progress text -->
         <div class="mb-4 text-black font-serif" style="font-family:'PP Editorial New',serif;font-size:14px;">
           ${t("question", i + 1, QUESTIONS.length)}
@@ -165,6 +168,8 @@ function renderQuestion(i) {
                     border-color: ${optionBorder};
                     border-radius: 0;
                     z-index:1;
+                    outline: 4px solid rgba(254,232,67,0.45);
+                    outline-offset: 2px;
                   "
                   onclick="selectAnswer('${q.id}','${opt.value}',${i})"
                 >
