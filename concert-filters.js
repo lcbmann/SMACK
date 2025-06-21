@@ -1,116 +1,39 @@
-/*  concerts-filter.js  – v4
+/*  concerts-filter.js  – v6
     ------------------------------------------------------------
-    – city-, early- und occasion-Filter
-    – Archetyp/Subtyp-Presets
-    – Jedes Konzert erhält ≥ 1 Occasion:
-        · Treffer  ➜ passende Tags
-        · kein Treffer ➜  ["family","friends","date","alone"]
-    – Numerische TExp/REnergy-Filter pro Archetyp
+    – 1) Archetyp: city, early-bird & numeric TExp/REnergy
+    – 2) Subtyp: single occasion-regex gegen alle Konzerte
+    – 3) Nur gefundene Subtype-Konzerte unionieren (keine Duplikate)
 ----------------------------------------------------------------*/
-
-//EARLY BIRD STUFF FOR AMELIE
-//import { getIsEarlyBird } from './quiz-config.js';
-// ...
-//const isEarlyBird = getIsEarlyBird(answers); // true, false, or undefined
-
-
 
 import { CONCERTS } from "./concerts.js";
 
 /* ───────────────────────────  Utils  ──────────────────────────*/
 
-export const isEarly = (c) => Number((c?.start ?? "25").split(":")[0]) < 19;
+// hour < 19 → early-bird
+export const isEarly = (c) =>
+    Number((c?.start ?? "25").split(":")[0]) < 19;
 
+// normalize für City-Vergleich
 export const normalize = (s) =>
     (s ?? "")
         .toLowerCase()
-        .normalize("NFD")           // ä → a + ̈ usw.
+        .normalize("NFD")
         .replace(/[\u0300-\u036f]/g, "")
         .trim();
 
-/* ─────────────── 1) Occasion-Wortlisten  ─────────────────────*/
-
-const WORDS = {
-    family: new RegExp(
-        [
-            "kammer", "familien", "kinder", "kids?", "kita", "schul", "school", "jugend", "youth",
-            "classroom", "jugendchor", "junior", "matinee", "mob", "märchen",
-            "tiere", "fabel", "eltern", "großeltern", "märchenkonzert"
-        ].join("|"),
-        "i"
-    ),
-
-    friends: new RegExp(
-        [
-            "jugend", "youth", "u30", "unter ?30", "uni", "campus", "student",
-            "classroom", "rainbow", "pride", "late", "afterwork", "open\\s*air",
-            "lounge", "party", "beats?", "club", "x?tra", "freunde", "new\\s*year",
-        ].join("|"),
-        "i"
-    ),
-
-    date: new RegExp(
-        [
-            "kammer", "klassik am odeonsplatz", "odeonsplatz", "romantic",
-            "valentin", "candle", "love", "date", "nacht", "night",
-            "late", "moon", "silvester", "new\\s*year", "weinachts?"
-        ].join("|"),
-        "i"
-    ),
-
-    alone: new RegExp(
-        [
-            "kammer", "quartett?", "quintett?", "trio", "duo",
-            "solo", "rezit[ai]l", "recital", "liederabend",
-            "sonate", "streich", "intim", "saal\\s*x", "hp8"
-        ].join("|"),
-        "i"
-    )
-};
-
-/* ─────────────── 2) Occasion-Erkennung  ──────────────────────*/
-
+// baue einen einzigen Text, um die Regex drauf loszulassen
 const concatAll = (c) =>
     [c.title, c.programm, c.series, c.type, c.venue]
         .filter(Boolean)
         .join(" · ");
 
-export const getOccasions = (concert) => {
-    const text = concatAll(concert);
-    const tags = Object.entries(WORDS)
-        .filter(([, rx]) => rx.test(text))
-        .map(([k]) => k);
+/* ─────────────── 1) Regex pro Subtyp ─────────────────────────*/
 
-    /*  Mindestens 1 Tag:  Treffer → tags, sonst alle vier  */
-    return tags.length ? tags : ["family", "friends", "date", "alone"];
-};
-
-/* ─────────────── 3) applyFilters()  ──────────────────────────*/
-
-export function applyFilters(
-    list = CONCERTS,
-    { city, early, occasion } = {}
-) {
-    const occWanted = occasion ? [].concat(occasion) : null;
-
-    return list.filter((c) => {
-        const cityOk  = !city  || normalize(c.city) === normalize(city);
-        const earlyOk = !early || isEarly(c);
-
-        const occTags = getOccasions(c);
-        const occOk   = !occWanted || occTags.some((t) => occWanted.includes(t));
-
-        return cityOk && earlyOk && occOk;
-    });
-}
-
-/* ──────────── 4) Archetyp- & Subtyp-Presets  ─────────────────*/
-
-const ARCHETYPE_PRESETS = {
-    connoisseur: { city: "München" },
-    pioneer:     { city: "München" },
-    purist:      { city: "München" },
-    bohemian:    { city: "München" }
+const WORDS = {
+    family:  /kammer|familien|kinder|kids?|kita|schul|school|jugend|youth|classroom|jugendchor|junior|matinee|mob|märchen|tiere|fabel|eltern|großeltern|märchenkonzert/i,
+    friends: /jugend|youth|u30|unter ?30|uni|campus|student|classroom|rainbow|pride|late|afterwork|open\s*air|lounge|party|beats?|club|x?tra|freunde|new\s*year/i,
+    date:    /kammer|klassik am odeonsplatz|odeonsplatz|romantic|valentin|candle|love|date|nacht|night|late|moon|silvester|new\s*year|weinachts?/i,
+    alone:   /kammer|quartett?|quintett?|trio|duo|solo|rezit[ai]l|recital|liederabend|sonate|streich|intim|saal\s*x|hp8/i,
 };
 
 export const OCCASION_FOR_SUBTYPE = {
@@ -120,55 +43,76 @@ export const OCCASION_FOR_SUBTYPE = {
     independent: "alone"
 };
 
-/* ──────────── 5) Haupt-Helper für das Quiz  ─────────────────*/
+/* ─────────────── 2) Archetyp-Presets ────────────────────────*/
+
+const ARCHETYPE_PRESETS = {
+    connoisseur: { city: "München", early: undefined },
+    pioneer:     { city: "München", early: undefined },
+    purist:      { city: "München", early: undefined },
+    bohemian:    { city: "München", early: undefined },
+};
+
+/* ──────────── 3) Hauptfunktion für das Quiz ──────────────────*/
 
 export function getConcertsForResult(archetypeId, subtypeKey) {
-    const base     = ARCHETYPE_PRESETS[archetypeId] ?? {};
-    const occasion = OCCASION_FOR_SUBTYPE[subtypeKey];
-    const preset   = { ...base, ...(occasion && { occasion }) };
+    // 1) Archetyp-Filter
+    const { city, early } = ARCHETYPE_PRESETS[archetypeId] || {};
+    let base = CONCERTS.filter(c => {
+        const cityOk  = !city  || normalize(c.city) === normalize(city);
+        const earlyOk = early === undefined || (early ? isEarly(c) : !isEarly(c));
+        return cityOk && earlyOk;
+    });
 
-    // 1) City / Early / Occasion
-    let filtered = applyFilters(CONCERTS, preset);
-
-    // 2) Numerische TExp / REnergy-Kriterien je Archetyp
+    // 2) Numerische TExp / REnergy pro Archetyp
     switch (archetypeId) {
         case "connoisseur":
-            filtered = filtered.filter(c =>
-                Number(c.TExp) <= 3 &&
-                Number(c.REnergy) >= 4
+            base = base.filter(c =>
+                Number(c.TExp) <= 3 && Number(c.REnergy) >= 4
             );
             break;
         case "pioneer":
-            filtered = filtered.filter(c =>
-                Number(c.TExp) >= 4 &&
-                Number(c.REnergy) >= 4
+            base = base.filter(c =>
+                Number(c.TExp) >= 4 && Number(c.REnergy) >= 4
             );
             break;
         case "purist":
-            filtered = filtered.filter(c =>
-                Number(c.TExp) <= 3 &&
-                Number(c.REnergy) <= 3
+            base = base.filter(c =>
+                Number(c.TExp) <= 3 && Number(c.REnergy) <= 3
             );
             break;
         case "bohemian":
-            filtered = filtered.filter(c =>
-                Number(c.TExp) >= 4 &&
-                Number(c.REnergy) <= 3
+            base = base.filter(c =>
+                Number(c.TExp) >= 4 && Number(c.REnergy) <= 3
             );
             break;
         default:
             break;
     }
 
-    // 3) Speichern und zurückgeben
+    // 3) Subtyp-Regex über alle Konzerte
+    const occasionTag = OCCASION_FOR_SUBTYPE[subtypeKey];
+    const subtypeMatches = occasionTag
+        ? CONCERTS.filter(c => WORDS[occasionTag].test(concatAll(c)))
+        : [];
+
+    // 4) Nur wenn es Subtyp-Matches gab, unioniere
+    let result = base;
+    if (subtypeMatches.length > 0) {
+        result = [...base];
+        for (const c of subtypeMatches) {
+            if (!result.includes(c)) result.push(c);
+        }
+    }
+
+    // 5) Optional: Cache
     try {
         localStorage.setItem(
             `mphil-concerts-${archetypeId}-${subtypeKey}`,
-            JSON.stringify(filtered)
+            JSON.stringify(result)
         );
-    } catch {/* quota errors ignored */}
+    } catch {}
 
-    return filtered;
+    return result;
 }
 
-export default { applyFilters, getConcertsForResult, getOccasions };
+export default { getConcertsForResult };
