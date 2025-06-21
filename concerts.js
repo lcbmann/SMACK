@@ -20,6 +20,8 @@ const concerts = [
     conductorLastName: "Shani",
     conductorGivenNames: "Lahav",
     capacity: 1800,
+    TExp: 0,
+    REnergy: 0,
     link: null
   },
   {
@@ -41,6 +43,8 @@ const concerts = [
     conductorLastName: null,
     conductorGivenNames: null,
     capacity: 0,
+    TExp: 0,
+    REnergy: 0,
     link: null
   },
   {
@@ -62,6 +66,8 @@ const concerts = [
     conductorLastName: "Shani",
     conductorGivenNames: "Lahav",
     capacity: 1800,
+    TExp: 0,
+    REnergy: 0,
     link: null
   },
   {
@@ -83,6 +89,8 @@ const concerts = [
     conductorLastName: "Nelsons",
     conductorGivenNames: "Andris",
     capacity: 1800,
+    TExp: 0,
+    REnergy: 0,
     link: null
   },
   {
@@ -104,6 +112,8 @@ const concerts = [
     conductorLastName: "Nelsons",
     conductorGivenNames: "Andris",
     capacity: 1800,
+    TExp: 0,
+    REnergy: 0,
     link: null
   },
   {
@@ -125,6 +135,8 @@ const concerts = [
     conductorLastName: null,
     conductorGivenNames: null,
     capacity: 400,
+    TExp: 0,
+    REnergy: 0,
     link: "https://tickets.muenchenticket.net/shop/142/link/event/419281"
   },
   {
@@ -146,6 +158,8 @@ const concerts = [
     conductorLastName: null,
     conductorGivenNames: null,
     capacity: 0,
+    TExp: 0,
+    REnergy: 0,
     link: "https://tickets.muenchenticket.net/shop/142/link/event/430638"
   },
   {
@@ -167,6 +181,8 @@ const concerts = [
     conductorLastName: "Gimeno",
     conductorGivenNames: "Gustavo",
     capacity: 1800,
+    TExp: 0,
+    REnergy: 0,
     link: "https://tickets.muenchenticket.net/shop/142/link/event/417341"
   },
   {
@@ -188,6 +204,8 @@ const concerts = [
     conductorLastName: "Gimeno",
     conductorGivenNames: "Gustavo",
     capacity: 1800,
+    TExp: 0,
+    REnergy: 0,
     link: "https://tickets.muenchenticket.net/shop/142/link/event/425617"
   },
   {
@@ -209,6 +227,8 @@ const concerts = [
     conductorLastName: "Gimeno",
     conductorGivenNames: "Gustavo",
     capacity: 1800,
+    TExp: 0,
+    REnergy: 0,
     link: "https://tickets.muenchenticket.net/shop/142/link/event/417342"
   },
   {
@@ -230,6 +250,8 @@ const concerts = [
     conductorLastName: "Orozco-Estrada",
     conductorGivenNames: "Andrés",
     capacity: 1800,
+    TExp: 0,
+    REnergy: 0,
     link: "https://tickets.muenchenticket.net/shop/142/link/event/417343"
   },
   {
@@ -251,6 +273,8 @@ const concerts = [
     conductorLastName: "Orozco-Estrada",
     conductorGivenNames: "Andrés",
     capacity: 1800,
+    TExp: 0,
+    REnergy: 0,
     link: "https://tickets.muenchenticket.net/shop/142/link/event/417344"
   },
   {
@@ -272,6 +296,8 @@ const concerts = [
     conductorLastName: "Shani",
     conductorGivenNames: "Lahav",
     capacity: 0,
+    TExp: 0,
+    REnergy: 0,
     link: "https://www.muenchenticket.de/event/klassik-am-odeonsplatz-2025-muenchner-philharmoniker-30871/426293/"
   },
   {
@@ -293,6 +319,8 @@ const concerts = [
     conductorLastName: "Yoon",
     conductorGivenNames: "Hankyeol",
     capacity: 1800,
+    TExp: 0,
+    REnergy: 0,
     link: "https://tickets.muenchenticket.net/shop/142/link/event/422183"
   },
   {
@@ -314,6 +342,8 @@ const concerts = [
     conductorLastName: "Shani",
     conductorGivenNames: "Lahav",
     capacity: 1800,
+    TExp: 0,
+    REnergy: 0,
     link: "https://tickets.muenchenticket.net/shop/142/link/event/432277"
   },
   {
@@ -335,6 +365,8 @@ const concerts = [
     conductorLastName: "Shani",
     conductorGivenNames: "Lahav",
     capacity: 1800,
+    TExp: 0,
+    REnergy: 0,
     link: "https://tickets.muenchenticket.net/shop/142/link/event/432178"
   },
   {
@@ -356,6 +388,8 @@ const concerts = [
     conductorLastName: "Stasevska",
     conductorGivenNames: "Dalia",
     capacity: 1800,
+    TExp: 0,
+    REnergy: 0,
     link: "https://tickets.muenchenticket.net/shop/142/link/event/432256"
   },
   {
@@ -377,6 +411,8 @@ const concerts = [
     conductorLastName: "Stasevska",
     conductorGivenNames: "Dalia",
     capacity: 1800,
+    TExp: 0,
+    REnergy: 0,
     link: "https://tickets.muenchenticket.net/shop/142/link/event/432269"
   },
   {
@@ -398,6 +434,8 @@ const concerts = [
     conductorLastName: "Nagano",
     conductorGivenNames: "Kent",
     capacity: 1800,
+    TExp: 0,
+    REnergy: 0,
     link: "https://tickets.muenchenticket.net/shop/142/link/event/432179"
   },
   {
@@ -419,6 +457,8 @@ const concerts = [
     conductorLastName: "Nagano",
     conductorGivenNames: "Kent",
     capacity: 1800,
+    TExp: 0,
+    REnergy: 0,
     link: "https://tickets.muenchenticket.net/shop/142/link/event/432187"
   },
   {
@@ -440,6 +480,8 @@ const concerts = [
     conductorLastName: null,
     conductorGivenNames: null,
     capacity: 400,
+    TExp: 0,
+    REnergy: 0,
     link: "https://tickets.muenchenticket.net/shop/142/link/event/432335"
   },
   {
@@ -461,6 +503,8 @@ const concerts = [
     conductorLastName: "Macelaru",
     conductorGivenNames: "Cristian",
     capacity: 1800,
+    TExp: 0,
+    REnergy: 0,
     link: "https://tickets.muenchenticket.net/shop/142/link/event/432209"
   },
   {
@@ -482,6 +526,8 @@ const concerts = [
     conductorLastName: "Macelaru",
     conductorGivenNames: "Cristian",
     capacity: 1800,
+    TExp: 0,
+    REnergy: 0,
     link: "https://tickets.muenchenticket.net/shop/142/link/event/432270"
   },
   {
@@ -503,6 +549,8 @@ const concerts = [
     conductorLastName: "Pintscher",
     conductorGivenNames: "Matthias",
     capacity: 1800,
+    TExp: 0,
+    REnergy: 0,
     link: "https://tickets.muenchenticket.net/shop/142/link/event/432201"
   },
   {
@@ -524,6 +572,8 @@ const concerts = [
     conductorLastName: "Pintscher",
     conductorGivenNames: "Matthias",
     capacity: 1800,
+    TExp: 0,
+    REnergy: 0,
     link: "https://tickets.muenchenticket.net/shop/142/link/event/432257"
   },
   {
@@ -545,6 +595,8 @@ const concerts = [
     conductorLastName: "Minasi",
     conductorGivenNames: "Ricardo",
     capacity: 1800,
+    TExp: 0,
+    REnergy: 0,
     link: "https://tickets.muenchenticket.net/shop/142/link/event/432180"
   },
   {
@@ -566,6 +618,8 @@ const concerts = [
     conductorLastName: "Minasi",
     conductorGivenNames: "Ricardo",
     capacity: 1800,
+    TExp: 0,
+    REnergy: 0,
     link: "https://tickets.muenchenticket.net/shop/142/link/event/432189"
   },
   {
@@ -587,6 +641,8 @@ const concerts = [
     conductorLastName: null,
     conductorGivenNames: null,
     capacity: 400,
+    TExp: 0,
+    REnergy: 0,
     link: "https://tickets.muenchenticket.net/shop/142/link/event/432337"
   },
   {
@@ -608,6 +664,8 @@ const concerts = [
     conductorLastName: "Rouvali",
     conductorGivenNames: "Santtu-Matias",
     capacity: 1800,
+    TExp: 0,
+    REnergy: 0,
     link: null
   },
   {
@@ -629,6 +687,8 @@ const concerts = [
     conductorLastName: "Rouvali",
     conductorGivenNames: "Santtu-Matias",
     capacity: 1800,
+    TExp: 0,
+    REnergy: 0,
     link: "https://tickets.muenchenticket.net/shop/142/link/event/432331"
   },
   {
@@ -650,6 +710,8 @@ const concerts = [
     conductorLastName: "Rouvali",
     conductorGivenNames: "Santtu-Matias",
     capacity: 1800,
+    TExp: 0,
+    REnergy: 0,
     link: "https://tickets.muenchenticket.net/shop/142/link/event/432271"
   },
   {
@@ -671,6 +733,8 @@ const concerts = [
     conductorLastName: "Sokhiev",
     conductorGivenNames: "Tugan",
     capacity: 1800,
+    TExp: 0,
+    REnergy: 0,
     link: "https://tickets.muenchenticket.net/shop/142/link/event/432190"
   },
   {
@@ -692,6 +756,8 @@ const concerts = [
     conductorLastName: "Sokhiev",
     conductorGivenNames: "Tugan",
     capacity: 1800,
+    TExp: 0,
+    REnergy: 0,
     link: "https://tickets.muenchenticket.net/shop/142/link/event/436488"
   },
   {
@@ -713,6 +779,8 @@ const concerts = [
     conductorLastName: "Sokhiev",
     conductorGivenNames: "Tugan",
     capacity: 1800,
+    TExp: 0,
+    REnergy: 0,
     link: "https://tickets.muenchenticket.net/shop/142/link/event/432210"
   },
   {
@@ -734,6 +802,8 @@ const concerts = [
     conductorLastName: "Chang",
     conductorGivenNames: "Han-Na",
     capacity: 1800,
+    TExp: 0,
+    REnergy: 0,
     link: "https://tickets.muenchenticket.net/shop/142/link/event/432202"
   },
   {
@@ -755,6 +825,8 @@ const concerts = [
     conductorLastName: "Chang",
     conductorGivenNames: "Han-Na",
     capacity: 1800,
+    TExp: 0,
+    REnergy: 0,
     link: "https://tickets.muenchenticket.net/shop/142/link/event/432323"
   },
   {
@@ -776,6 +848,8 @@ const concerts = [
     conductorLastName: "Bortolameolli",
     conductorGivenNames: "Paolo",
     capacity: 1800,
+    TExp: 0,
+    REnergy: 0,
     link: "https://tickets.muenchenticket.net/shop/142/link/event/432181"
   },
   {
@@ -797,6 +871,8 @@ const concerts = [
     conductorLastName: "Bortolameolli",
     conductorGivenNames: "Paolo",
     capacity: 1800,
+    TExp: 0,
+    REnergy: 0,
     link: "https://tickets.muenchenticket.net/shop/142/link/event/432191"
   },
   {
@@ -818,6 +894,8 @@ const concerts = [
     conductorLastName: "Bortolameolli",
     conductorGivenNames: "Paolo",
     capacity: 1800,
+    TExp: 0,
+    REnergy: 0,
     link: "https://tickets.muenchenticket.net/shop/142/link/event/432259"
   },
   {
@@ -839,6 +917,8 @@ const concerts = [
     conductorLastName: null,
     conductorGivenNames: null,
     capacity: 400,
+    TExp: 0,
+    REnergy: 0,
     link: "https://tickets.muenchenticket.net/shop/142/link/event/432342"
   },
   {
@@ -860,6 +940,8 @@ const concerts = [
     conductorLastName: "Shani",
     conductorGivenNames: "Lahav",
     capacity: 1800,
+    TExp: 0,
+    REnergy: 0,
     link: "https://tickets.muenchenticket.net/shop/142/link/event/432332"
   },
   {
@@ -881,6 +963,8 @@ const concerts = [
     conductorLastName: "Shani",
     conductorGivenNames: "Lahav",
     capacity: 1800,
+    TExp: 0,
+    REnergy: 0,
     link: "https://tickets.muenchenticket.net/shop/142/link/event/432211"
   },
   {
@@ -902,6 +986,8 @@ const concerts = [
     conductorLastName: "Shani",
     conductorGivenNames: "Lahav",
     capacity: 1800,
+    TExp: 0,
+    REnergy: 0,
     link: "https://tickets.muenchenticket.net/shop/142/link/event/432272"
   },
   {
@@ -923,6 +1009,8 @@ const concerts = [
     conductorLastName: "Ollikainen",
     conductorGivenNames: "Eva",
     capacity: 1800,
+    TExp: 0,
+    REnergy: 0,
     link: "https://tickets.muenchenticket.net/shop/142/link/event/432326"
   },
   {
@@ -944,6 +1032,8 @@ const concerts = [
     conductorLastName: "Ollikainen",
     conductorGivenNames: "Eva",
     capacity: 1800,
+    TExp: 0,
+    REnergy: 0,
     link: "https://tickets.muenchenticket.net/shop/142/link/event/434700"
   },
   {
@@ -965,6 +1055,8 @@ const concerts = [
     conductorLastName: "Marcon",
     conductorGivenNames: "Andrea",
     capacity: 1800,
+    TExp: 0,
+    REnergy: 0,
     link: "https://tickets.muenchenticket.net/shop/142/link/event/432203"
   },
   {
@@ -986,6 +1078,8 @@ const concerts = [
     conductorLastName: "Marcon",
     conductorGivenNames: "Andrea",
     capacity: 1800,
+    TExp: 0,
+    REnergy: 0,
     link: "https://tickets.muenchenticket.net/shop/142/link/event/432212"
   },
   {
@@ -1007,6 +1101,8 @@ const concerts = [
     conductorLastName: "Venzago",
     conductorGivenNames: "Gabriel",
     capacity: 1800,
+    TExp: 0,
+    REnergy: 0,
     link: "https://tickets.muenchenticket.net/shop/142/link/event/435168"
   },
   {
@@ -1028,6 +1124,8 @@ const concerts = [
     conductorLastName: "Venzago",
     conductorGivenNames: "Gabriel",
     capacity: 1800,
+    TExp: 0,
+    REnergy: 0,
     link: "https://tickets.muenchenticket.net/shop/142/link/event/435169"
   },
   {
@@ -1049,6 +1147,8 @@ const concerts = [
     conductorLastName: null,
     conductorGivenNames: null,
     capacity: 400,
+    TExp: 0,
+    REnergy: 0,
     link: "https://tickets.muenchenticket.net/shop/142/link/event/432338"
   },
   {
@@ -1070,6 +1170,8 @@ const concerts = [
     conductorLastName: "Marshall",
     conductorGivenNames: "Wayne",
     capacity: 1800,
+    TExp: 0,
+    REnergy: 0,
     link: "https://tickets.muenchenticket.net/shop/142/link/event/432182"
   },
   {
@@ -1091,6 +1193,8 @@ const concerts = [
     conductorLastName: "Marshall",
     conductorGivenNames: "Wayne",
     capacity: 1800,
+    TExp: 0,
+    REnergy: 0,
     link: null
   },
   {
@@ -1112,6 +1216,8 @@ const concerts = [
     conductorLastName: "Marshall",
     conductorGivenNames: "Wayne",
     capacity: 1800,
+    TExp: 0,
+    REnergy: 0,
     link: "https://tickets.muenchenticket.net/shop/142/link/event/432333"
   },
   {
@@ -1133,6 +1239,8 @@ const concerts = [
     conductorLastName: "Shani",
     conductorGivenNames: "Lahav",
     capacity: 1800,
+    TExp: 0,
+    REnergy: 0,
     link: "https://tickets.muenchenticket.net/shop/142/link/event/432260"
   },
   {
@@ -1154,6 +1262,8 @@ const concerts = [
     conductorLastName: "Shani",
     conductorGivenNames: "Lahav",
     capacity: 1800,
+    TExp: 0,
+    REnergy: 0,
     link: "https://tickets.muenchenticket.net/shop/142/link/event/432195"
   },
   {
@@ -1175,6 +1285,8 @@ const concerts = [
     conductorLastName: "Shani",
     conductorGivenNames: "Lahav",
     capacity: 1800,
+    TExp: 0,
+    REnergy: 0,
     link: "https://tickets.muenchenticket.net/shop/142/link/event/432204"
   },
   {
@@ -1196,6 +1308,8 @@ const concerts = [
     conductorLastName: "Lubman",
     conductorGivenNames: "Brad",
     capacity: 1800,
+    TExp: 0,
+    REnergy: 0,
     link: "https://tickets.muenchenticket.net/shop/142/link/event/432213"
   },
   {
@@ -1217,6 +1331,8 @@ const concerts = [
     conductorLastName: "Lubman",
     conductorGivenNames: "Brad",
     capacity: 1800,
+    TExp: 0,
+    REnergy: 0,
     link: "https://tickets.muenchenticket.net/shop/142/link/event/432273"
   },
   {
@@ -1238,6 +1354,8 @@ const concerts = [
     conductorLastName: null,
     conductorGivenNames: null,
     capacity: 400,
+    TExp: 0,
+    REnergy: 0,
     link: "https://tickets.muenchenticket.net/shop/142/link/event/432339"
   },
   {
@@ -1259,6 +1377,8 @@ const concerts = [
     conductorLastName: "Manacorda",
     conductorGivenNames: "Antonello",
     capacity: 1800,
+    TExp: 0,
+    REnergy: 0,
     link: "https://tickets.muenchenticket.net/shop/142/link/event/432183"
   },
   {
@@ -1280,6 +1400,8 @@ const concerts = [
     conductorLastName: "Manacorda",
     conductorGivenNames: "Antonello",
     capacity: 1800,
+    TExp: 0,
+    REnergy: 0,
     link: "https://tickets.muenchenticket.net/shop/142/link/event/432196"
   },
   {
@@ -1301,6 +1423,8 @@ const concerts = [
     conductorLastName: "Manacorda",
     conductorGivenNames: "Antonello",
     capacity: 1800,
+    TExp: 0,
+    REnergy: 0,
     link: "https://tickets.muenchenticket.net/shop/142/link/event/432324"
   },
   {
@@ -1322,6 +1446,8 @@ const concerts = [
     conductorLastName: "Manze",
     conductorGivenNames: "Andrew",
     capacity: 1800,
+    TExp: 0,
+    REnergy: 0,
     link: "https://tickets.muenchenticket.net/shop/142/link/event/432205"
   },
   {
@@ -1343,6 +1469,8 @@ const concerts = [
     conductorLastName: "Manze",
     conductorGivenNames: "Andrew",
     capacity: 1800,
+    TExp: 0,
+    REnergy: 0,
     link: "https://tickets.muenchenticket.net/shop/142/link/event/432261"
   },
   {
@@ -1364,6 +1492,8 @@ const concerts = [
     conductorLastName: "Shani",
     conductorGivenNames: "Lahav",
     capacity: 1800,
+    TExp: 0,
+    REnergy: 0,
     link: "https://tickets.muenchenticket.net/shop/142/link/event/432184"
   },
   {
@@ -1385,6 +1515,8 @@ const concerts = [
     conductorLastName: "Shani",
     conductorGivenNames: "Lahav",
     capacity: 1800,
+    TExp: 0,
+    REnergy: 0,
     link: "https://tickets.muenchenticket.net/shop/142/link/event/432327"
   },
   {
@@ -1406,6 +1538,8 @@ const concerts = [
     conductorLastName: null,
     conductorGivenNames: null,
     capacity: 400,
+    TExp: 0,
+    REnergy: 0,
     link: "https://tickets.muenchenticket.net/shop/142/link/event/432340"
   },
   {
@@ -1427,6 +1561,8 @@ const concerts = [
     conductorLastName: "N.N.",
     conductorGivenNames: null,
     capacity: 1800,
+    TExp: 0,
+    REnergy: 0,
     link: "https://tickets.muenchenticket.net/shop/142/link/event/435140"
   },
   {
@@ -1448,6 +1584,8 @@ const concerts = [
     conductorLastName: "N.N.",
     conductorGivenNames: null,
     capacity: 1800,
+    TExp: 0,
+    REnergy: 0,
     link: "https://tickets.muenchenticket.net/shop/142/link/event/435141"
   },
   {
@@ -1469,6 +1607,8 @@ const concerts = [
     conductorLastName: "Chan",
     conductorGivenNames: "Elim",
     capacity: 1800,
+    TExp: 0,
+    REnergy: 0,
     link: "https://tickets.muenchenticket.net/shop/142/link/event/432214"
   },
   {
@@ -1490,6 +1630,8 @@ const concerts = [
     conductorLastName: "Chan",
     conductorGivenNames: "Elim",
     capacity: 1800,
+    TExp: 0,
+    REnergy: 0,
     link: "https://tickets.muenchenticket.net/shop/142/link/event/432274"
   },
   {
@@ -1511,6 +1653,8 @@ const concerts = [
     conductorLastName: "Pichon",
     conductorGivenNames: "Raphael",
     capacity: 1800,
+    TExp: 0,
+    REnergy: 0,
     link: "https://tickets.muenchenticket.net/shop/142/link/event/432206"
   },
   {
@@ -1532,6 +1676,8 @@ const concerts = [
     conductorLastName: "Pichon",
     conductorGivenNames: "Raphael",
     capacity: 1800,
+    TExp: 0,
+    REnergy: 0,
     link: "https://tickets.muenchenticket.net/shop/142/link/event/432215"
   },
   {
@@ -1553,6 +1699,8 @@ const concerts = [
     conductorLastName: null,
     conductorGivenNames: null,
     capacity: 400,
+    TExp: 0,
+    REnergy: 0,
     link: "https://tickets.muenchenticket.net/shop/142/link/event/432341"
   },
   {
@@ -1574,6 +1722,8 @@ const concerts = [
     conductorLastName: "Shani",
     conductorGivenNames: "Lahav",
     capacity: 1800,
+    TExp: 0,
+    REnergy: 0,
     link: "https://tickets.muenchenticket.net/shop/142/link/event/432198"
   },
   {
@@ -1595,6 +1745,8 @@ const concerts = [
     conductorLastName: "Shani",
     conductorGivenNames: "Lahav",
     capacity: 1800,
+    TExp: 0,
+    REnergy: 0,
     link: "https://tickets.muenchenticket.net/shop/142/link/event/432262"
   },
   {
@@ -1616,6 +1768,8 @@ const concerts = [
     conductorLastName: "Shani",
     conductorGivenNames: "Lahav",
     capacity: 1800,
+    TExp: 0,
+    REnergy: 0,
     link: null
   },
   {
@@ -1637,6 +1791,8 @@ const concerts = [
     conductorLastName: "Peltokowski",
     conductorGivenNames: "Tarmo",
     capacity: 1800,
+    TExp: 0,
+    REnergy: 0,
     link: "https://tickets.muenchenticket.net/shop/142/link/event/432328"
   },
   {
@@ -1658,6 +1814,8 @@ const concerts = [
     conductorLastName: "Peltokowski",
     conductorGivenNames: "Tarmo",
     capacity: 1800,
+    TExp: 0,
+    REnergy: 0,
     link: "https://tickets.muenchenticket.net/shop/142/link/event/432275"
   },
   {
@@ -1679,6 +1837,8 @@ const concerts = [
     conductorLastName: "Altinoglu",
     conductorGivenNames: "Alain",
     capacity: 1800,
+    TExp: 0,
+    REnergy: 0,
     link: "https://tickets.muenchenticket.net/shop/142/link/event/432207"
   },
   {
@@ -1700,6 +1860,8 @@ const concerts = [
     conductorLastName: "Altinoglu",
     conductorGivenNames: "Alain",
     capacity: 1800,
+    TExp: 0,
+    REnergy: 0,
     link: "https://tickets.muenchenticket.net/shop/142/link/event/432263"
   },
   {
@@ -1721,6 +1883,8 @@ const concerts = [
     conductorLastName: "Hrusa",
     conductorGivenNames: "Jakub",
     capacity: 1800,
+    TExp: 0,
+    REnergy: 0,
     link: "https://tickets.muenchenticket.net/shop/142/link/event/432329"
   },
   {
@@ -1742,6 +1906,8 @@ const concerts = [
     conductorLastName: "Hrusa",
     conductorGivenNames: "Jakub",
     capacity: 1800,
+    TExp: 0,
+    REnergy: 0,
     link: "https://tickets.muenchenticket.net/shop/142/link/event/432276"
   },
   {
@@ -1763,6 +1929,8 @@ const concerts = [
     conductorLastName: null,
     conductorGivenNames: null,
     capacity: 0,
+    TExp: 0,
+    REnergy: 0,
     link: null
   },
   {
@@ -1784,6 +1952,8 @@ const concerts = [
     conductorLastName: "Mehta",
     conductorGivenNames: "Zubin",
     capacity: 1800,
+    TExp: 0,
+    REnergy: 0,
     link: "https://tickets.muenchenticket.net/shop/142/link/event/432200"
   },
   {
@@ -1805,6 +1975,8 @@ const concerts = [
     conductorLastName: "Mehta",
     conductorGivenNames: "Zubin",
     capacity: 1800,
+    TExp: 0,
+    REnergy: 0,
     link: "https://tickets.muenchenticket.net/shop/142/link/event/432325"
   },
   {
@@ -1826,6 +1998,8 @@ const concerts = [
     conductorLastName: "Mehta",
     conductorGivenNames: "Zubin",
     capacity: 1800,
+    TExp: 0,
+    REnergy: 0,
     link: "https://tickets.muenchenticket.net/shop/142/link/event/432216"
   },
   {
@@ -1847,6 +2021,8 @@ const concerts = [
     conductorLastName: null,
     conductorGivenNames: null,
     capacity: 400,
+    TExp: 0,
+    REnergy: 0,
     link: "https://tickets.muenchenticket.net/shop/142/link/event/432343"
   },
   {
@@ -1868,6 +2044,8 @@ const concerts = [
     conductorLastName: "Hannigan",
     conductorGivenNames: "Barbara",
     capacity: 1800,
+    TExp: 0,
+    REnergy: 0,
     link: "https://tickets.muenchenticket.net/shop/142/link/event/432185"
   },
   {
@@ -1889,6 +2067,8 @@ const concerts = [
     conductorLastName: "Hannigan",
     conductorGivenNames: "Barbara",
     capacity: 1800,
+    TExp: 0,
+    REnergy: 0,
     link: "https://tickets.muenchenticket.net/shop/142/link/event/432264"
   },
   {
@@ -1910,6 +2090,8 @@ const concerts = [
     conductorLastName: "Popelka",
     conductorGivenNames: "Petr",
     capacity: 1800,
+    TExp: 0,
+    REnergy: 0,
     link: null
   },
   {
@@ -1931,6 +2113,8 @@ const concerts = [
     conductorLastName: "Popelka",
     conductorGivenNames: "Petr",
     capacity: 1800,
+    TExp: 0,
+    REnergy: 0,
     link: "https://tickets.muenchenticket.net/shop/142/link/event/432208"
   },
   {
@@ -1952,6 +2136,8 @@ const concerts = [
     conductorLastName: "Popelka",
     conductorGivenNames: "Petr",
     capacity: 1800,
+    TExp: 0,
+    REnergy: 0,
     link: "https://tickets.muenchenticket.net/shop/142/link/event/432334"
   },
   {
@@ -1973,6 +2159,8 @@ const concerts = [
     conductorLastName: "N.N.",
     conductorGivenNames: null,
     capacity: 1800,
+    TExp: 0,
+    REnergy: 0,
     link: null
   },
   {
@@ -1994,6 +2182,8 @@ const concerts = [
     conductorLastName: "Shani",
     conductorGivenNames: "Lahav",
     capacity: 0,
+    TExp: 0,
+    REnergy: 0,
     link: null
   }
 ];

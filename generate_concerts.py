@@ -5,45 +5,51 @@ wandelt die Tabelle „Concerts.numbers“ (oder .xlsx/.csv) in eine
 JavaScript-Datei concerts.js um. Die JS-Datei exportiert:
   • DEFAULT_CONCERT_LINK   (Fallback-URL)
   • CONCERTS               (Array aller Konzert-Objekte)
+
+NEU (06/2025)
+  • Spalten **TExp** und **REnergy** (ganzzahlig) werden übernommen.
 """
 
 import json, re, pathlib
 import pandas as pd
 
 try:
-    from numbers_parser import Document   # für Apple-Numbers
+    from numbers_parser import Document                 # Apple-Numbers
 except ImportError:
-    Document = None                       # Skript läuft trotzdem für .xlsx/.csv
+    Document = None                                     # Skript läuft ohne
 
-# ───────────────────────── Konfiguration ──────────────────────────
-SRC_FILE  = "Concerts.numbers"            # oder .xlsx / .csv
+# ─────────────── Konfiguration ──────────────────────────────────
+SRC_FILE  = "Concerts.numbers"          # oder .xlsx / .csv
 DEST_FILE = "concerts.js"
 DEFAULT_CONCERT_LINK = (
     "https://www.mphil.de/konzerte-und-karten/kalender-2024-2025#j44933"
 )
 
-# ───────────────────── 1) Datei einlesen ─────────────────────────
+# ─────────────── 1) Datei einlesen ──────────────────────────────
 suffix = pathlib.Path(SRC_FILE).suffix.lower()
 
 if suffix == ".numbers":
     if Document is None:
-        raise RuntimeError("numbers_parser nicht installiert (`pip install numbers-parser`)")
+        raise RuntimeError(
+            "numbers_parser nicht installiert – `pip install numbers-parser`"
+        )
     doc   = Document(SRC_FILE)
     sheet = doc.sheets[0]
     tbl   = sheet.tables[0]
     data  = list(tbl.rows(values_only=True))
     hdr   = [str(c).strip() for c in data[0]]
     df    = pd.DataFrame(data[1:], columns=hdr)
-else:  # .xlsx, .xls, .csv …
+else:                                   # .xlsx, .xls, .csv …
     df = pd.read_excel(SRC_FILE, dtype=str).fillna("")
 
-# Groß-/Kleinschreibung vereinheitlichen
+# Spaltennamen harmonisieren
 df.columns = df.columns.str.strip().str.lower()
 
-# ───────────────────── 2) Mapping-Funktion ───────────────────────
+# ─────────────── 2) Mapping-Funktion ────────────────────────────
 def map_row(r: pd.Series) -> dict:
-    """holt Spaltenwerte case-insensitiv, liefert leeren String falls nicht da"""
-    g = lambda col, default="": r.get(col.lower(), default)
+    """holt Spaltenwerte case-insensitiv, liefert »« oder 0, falls leer"""
+    g  = lambda col, default="": r.get(col.lower(), default)
+    gi = lambda col: int(g(col) or 0)
 
     return {
         "date":               g("date"),
@@ -52,18 +58,22 @@ def map_row(r: pd.Series) -> dict:
         "venue":              g("venue"),
         "city":               g("city"),
         "series":             g("series"),
-        "programm":           g("programm"),               # neue Spalte
-        "title":              g("title"),                  # Nutzer-Titel
+        "programm":           g("programm"),                 # neue Spalte
+        "title":              g("title"),                    # Nutzer-Titel
         "composers":          g("composer"),
         "composerGivenNames": g("given names composer"),
-        "titles":             g("title"),                  # evtl. legacy
+        "titles":             g("title"),                    # evtl. legacy
         "duration":           g("duration"),
         "soloistsLastNames":  g("last names soloists"),
         "soloistsGivenNames": g("given names solioist(s)"),
         "instruments":        g("instrument(s)"),
         "conductorLastName":   g("conductor"),
         "conductorGivenNames": g("given names conductors"),
-        "capacity":           int(g("capacity") or 0),
+        "capacity":           gi("capacity"),
+
+        # ────── NEU: zwei numerische Felder ──────
+        "TExp":               gi("texp"),
+        "REnergy":            gi("renergy"),
 
         # Link aus der Tabelle → sonst Fallback
         "link":               g("link", "DEFAULT_CONCERT_LINK")
@@ -71,7 +81,7 @@ def map_row(r: pd.Series) -> dict:
 
 concerts = [map_row(r) for _, r in df.iterrows()]
 
-# ───────────────────── 3) JS-Export bauen ────────────────────────
+# ─────────────── 3) JS-Export bauen ─────────────────────────────
 json_block = json.dumps(concerts, indent=2, ensure_ascii=False)
 
 # Keys ohne Anführungszeichen (JS-Object-Literal)
