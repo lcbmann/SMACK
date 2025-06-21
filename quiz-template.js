@@ -10,7 +10,8 @@ import {
   SUBTYPE_ARCHETYPE_DESCRIPTIONS,
   ARCHETYPE_COLORS,
   TRANSLATIONS,
-  LANG, setLang
+  LANG, setLang,
+  COLOR_SEQUENCE
 } from './quiz-config.js';
 
 import { getConcertsForResult } from "./concert-filters.js";
@@ -97,16 +98,23 @@ function renderIntro() {
 function startQuiz() { renderQuestion(0); }
 
 function renderQuestion(i) {
+  // --- FIX 1: Always start with green background for first question ---
+  // Use color sequence based on previous question, but for i=0, use 0 for both
+  const colorIdx = i % COLOR_SEQUENCE.length;
+  const prevColorIdx = (i === 0 ? 0 : (i - 1) % COLOR_SEQUENCE.length);
+
+  // For the first question, use green as the background
+  const bgColor = (i === 0)
+    ? COLOR_SEQUENCE[0].bgColor
+    : COLOR_SEQUENCE[prevColorIdx].optionBg;
+  const optionBg = COLOR_SEQUENCE[colorIdx].optionBg;
+  const optionText = COLOR_SEQUENCE[colorIdx].optionText;
+  const optionBorder = COLOR_SEQUENCE[colorIdx].optionBorder;
+  const nextBg       = COLOR_SEQUENCE[colorIdx].nextBg       || "#FEE843";
+  const nextText     = COLOR_SEQUENCE[colorIdx].nextText     || "#000";
+
   const q = QUESTIONS[i];
   if (!q) return renderResults();
-
-  // Use per-question colors or fallback
-  const bgColor      = q.bgColor      || "#8BC27D";
-  const optionBg     = q.optionBg     || "#F7C3D9";
-  const optionText   = q.optionText   || "#000";
-  const optionBorder = q.optionBorder || "#000";
-  const nextBg       = q.nextBg       || "#FEE843";
-  const nextText     = q.nextText     || "#000";
 
   // For multi-select, answers[q.id] is an array; for others, it's a string
   const isMulti = q.type === "multi";
@@ -130,7 +138,7 @@ function renderQuestion(i) {
   // Only animate on first render of the question, not on answer selection
   const shouldAnimate = !hasAnswer;
 
-  // AUDIO QUESTION SUPPORT
+  // --- FIX 2: Audio question selection feedback ---
   if (q.type === "audio") {
     quizContainer.innerHTML = /*html*/`
       <section class="relative w-full min-h-screen overflow-hidden" style="background:${bgColor};">
@@ -146,51 +154,48 @@ function renderQuestion(i) {
               ${q.text[LANG]}
             </h3>
           </div>
-          <div class="w-full flex flex-wrap justify-center gap-6 mb-16 mt-8">
+          <div class="flex flex-col gap-4 w-full max-w-md mx-auto">
             ${q.options.map((opt, idx) => {
               const selected = selectedAnswers === opt.value;
-              const description = opt.description?.[LANG] ? `<div class="text-xs text-gray-600 mt-2">${opt.description[LANG]}</div>` : "";
+              // Always use white text if background is black
+              const isBlackBg = (optionBg === "#000" || optionBg.toLowerCase() === "black" || optionBg === "black");
+              const textColor = isBlackBg ? "#fff" : optionText;
               return `
-                <div class="relative inline-block" style="width: 150px; min-height: 180px;">
-                  <div class="relative group">
-                    <img src="${opt.img}" alt="${opt.label[LANG]}" class="w-full h-24 object-cover border-2 ${selected ? 'border-yellow-300' : 'border-transparent'}" style="border-radius:0;">
-                    <button
-                      type="button"
-                      class="absolute top-2 left-2 bg-black/70 text-white rounded-full p-2 z-10"
-                      onclick="event.stopPropagation(); playAudioClip('${opt.audio}', this);"
-                      title="${t('playAudio')}"
-                      tabindex="-1"
-                    >
-                      <i class="fas fa-play"></i>
-                    </button>
-                    <button
-                      class="absolute inset-0 w-full h-full opacity-0"
-                      onclick="selectAnswer('${q.id}','${opt.value}',${i},false)"
-                      tabindex="-1"
-                    ></button>
+                <div
+                  class="w-full p-2 flex items-center gap-2 border outline outline-1 outline-offset-[-1px] outline-black rounded-none cursor-pointer transition
+                    ${selected ? 'ring-4 ring-yellow-300 shadow-lg scale-105' : ''}
+                  "
+                  onclick="selectAnswer('${q.id}','${opt.value}',${i},false)"
+                  style="
+                    background:${selected ? bgColor : optionBg};
+                    color:${textColor};
+                    border-color:${optionBorder};
+                    box-shadow:${selected ? '0 4px 24px 0 rgba(0,0,0,0.18)' : 'none'};
+                    transition: box-shadow 0.2s, transform 0.2s;
+                  "
+                >
+                  <div class="flex-shrink-0 w-10 h-10 bg-white border border-black flex items-center justify-center rounded-none overflow-hidden">
+                    <img src="${opt.img}" alt="${opt.label[LANG]}" class="object-cover w-10 h-10" />
                   </div>
                   <button
-                    class="w-full border px-4 py-4 flex flex-col items-center justify-center font-bold font-head text-[14px] text-center transition cursor-pointer"
-                    style="
-                      background: ${selected ? bgColor : optionBg};
-                      color: ${selected ? '#000' : optionText};
-                      border-color: ${optionBorder};
-                      border-radius: 0;
-                      outline: ${selected ? '4px solid rgba(254,232,67,0.45)' : 'none'};
-                      outline-offset: 2px;
-                      margin-top: 0;
-                    "
-                    onclick="selectAnswer('${q.id}','${opt.value}',${i},false)"
+                    type="button"
+                    class="ml-2 bg-black/70 text-white rounded-full p-2 flex items-center justify-center"
+                    onclick="event.stopPropagation(); playAudioClip('${opt.audio}', this);"
+                    title="${t('playAudio')}"
+                    tabindex="-1"
                   >
-                    <span>${opt.label[LANG]}</span>
-                    ${description}
+                    <i class="fas fa-play"></i>
                   </button>
+                  <div class="flex flex-col flex-1 min-w-0 ml-2">
+                    <div class="text-sm font-bold font-['Maison_Neue']" style="color:${textColor};">${opt.label[LANG]}</div>
+                    <div class="text-xs font-bold font-['Maison_Neue']" style="color:${textColor};">${opt.description?.[LANG] || ""}</div>
+                  </div>
                 </div>
               `;
             }).join("")}
           </div>
         </div>
-        <div class="absolute left-0 w-full flex justify-between px-8 z-20" style="bottom: 140px;">
+        <div class="absolute left-0 w-full flex justify-between px-8 z-20" style="bottom: 80px;">
           <button
             class="rounded font-bold font-head px-5 py-2 text-[14px] transition
               ${i === 0 ? 'opacity-50 pointer-events-none' : ''}"
@@ -837,11 +842,17 @@ window.playAudioClip = function(audioPath, btn) {
   // If this button is already playing, pause it
   if (btn._audio && !btn._audio.paused) {
     btn._audio.pause();
+    btn.innerHTML = '<i class="fas fa-play"></i>';
+    btn.title = t('playAudio');
     return;
   }
 
   // Pause any currently playing audio from another button
   if (window._currentAudio && !window._currentAudio.paused) {
+    if (window._currentAudio._btn) {
+      window._currentAudio._btn.innerHTML = '<i class="fas fa-play"></i>';
+      window._currentAudio._btn.title = t('playAudio');
+    }
     window._currentAudio.pause();
   }
 
@@ -849,6 +860,9 @@ window.playAudioClip = function(audioPath, btn) {
   if (btn._audio) {
     btn._audio.currentTime = 0;
     btn._audio.play();
+    btn.innerHTML = '<i class="fas fa-pause"></i>';
+    btn.title = t('pauseAudio');
+    window._currentAudio = btn._audio;
     return;
   }
 
@@ -862,6 +876,18 @@ window.playAudioClip = function(audioPath, btn) {
   audio.play();
 
   audio.onplay = () => {
+    btn.innerHTML = '<i class="fas fa-pause"></i>';
+    btn.title = t('pauseAudio');
+    window._currentAudio = audio;
+  };
+  audio.onpause = () => {
+    btn.innerHTML = '<i class="fas fa-play"></i>';
+    btn.title = t('playAudio');
+  };
+  audio.onended = () => {
+    btn.innerHTML = '<i class="fas fa-play"></i>';
+    btn.title = t('playAudio');
+    btn._audio = null;
     if (window._currentAudio === audio) window._currentAudio = null;
   };
 };
