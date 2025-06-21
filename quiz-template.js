@@ -340,18 +340,24 @@ function renderResults() {
       <ul class="space-y-3 mb-12">
         ${
             recs
-                .filter(c => new Date(c.date) >= new Date())
-                .sort((a, b) =>
+                .filter(c => new Date(c.date) >= new Date())                // nur zukünftige
+                .sort((a, b) =>                                             // Datum + Start sortieren
                     new Date(`${a.date}T${(a.start ?? "00:00").slice(0,5)}`) -
                     new Date(`${b.date}T${(b.start ?? "00:00").slice(0,5)}`)
                 )
-                .slice(0, 5)
+                .slice(0, 5)                                                // max. 5 Einträge
                 .map(c => `
               <li class="border p-4 rounded-xl text-left">
                 <span class="block font-semibold">${getTitle(c)}</span>
+      
+                ${getDetails(c)
+                    ? `<span class="block text-sm text-gray-700 mt-0.5">${getDetails(c)}</span>`
+                    : ""}
+      
                 <span class="text-sm text-gray-500">
                   ${getDate(c)}${getTime(c) ? " " + getTime(c) : ""} – ${c.venue}
                 </span>
+      
                 <a href="${c.link}" target="_blank" rel="noopener"
                    class="text-[var(--mphil-yellow)] underline text-sm mt-1 block">
                    View details
@@ -360,6 +366,7 @@ function renderResults() {
                 ).join("") || `<li style="font-size:28px;color:#888;">${t("noMatches")}</li>`
         }
       </ul>
+
 
       <button class="btn btn-primary btn-sm mb-3" onclick="shareResultImage()">${t("shareImage")}</button>
       <button class="btn btn-primary btn-sm mb-3" onclick="window.open('https://www.mphil.de/abonnement/infomaterial-bestellen/newsletter','_blank')">
@@ -376,9 +383,25 @@ function renderResults() {
    ────────────────────────────────────────────────────────────*/
 
 
-function getTitle(c) {
-  return (c.titles ?? "").split(";")[0].trim() || "Konzert";
+
+function cleanQuotes(str = "") {
+
+  return str.replace(/\s*"\s*(?=\s|$)/g, "");
 }
+
+function getTitle(c) {
+  const raw = cleanQuotes(c.titles ?? "");
+  return raw.split(";")[0].trim() || "Konzert";
+}
+
+function getDetails(c) {
+  const raw    = cleanQuotes(c.titles ?? "");
+  const parts  = raw.split(";").slice(1)
+      .map(s => s.trim())
+      .filter(Boolean);
+  return parts.join(" - ");
+}
+
 function getDate(c) {
   return (c.date ?? "").split(" ")[0];
 }
