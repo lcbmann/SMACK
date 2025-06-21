@@ -217,6 +217,86 @@ function renderQuestion(i) {
     return;
   }
 
+  // --- SLIDER TYPE: SOCIAL BATTERY ---
+  if (q.type === "slider") {
+    // Default to 3 if not answered yet
+    const value = typeof answers[q.id] === "number" ? answers[q.id] : 3;
+    const min = 1, max = 6;
+
+    quizContainer.innerHTML = /*html*/`
+      <section class="relative w-full min-h-screen overflow-hidden" style="background:${bgColor};">
+        <!-- Small logo in top left -->
+        <img src="assets/logo.png" alt="Logo" class="absolute top-4 left-4 z-20 w-12 h-12 object-contain pointer-events-none" />
+        ${shapeImgHtml}
+        <div class="flex flex-col items-center w-full min-h-screen pt-24 pb-12${shouldAnimate ? ' animate-fadein' : ''}">
+          <div class="mb-4 text-black font-serif" style="font-family:'PP Editorial New',serif;font-size:14px;">
+            ${t("question", i + 1, QUESTIONS.length)}
+          </div>
+          <div class="mb-8 w-full flex justify-center">
+            <h3 class="text-black text-2xl sm:text-3xl font-serif text-center mx-auto max-w-xs" style="font-family:'PP Editorial New',serif;font-weight:400;">
+              ${q.text[LANG]}
+            </h3>
+          </div>
+          <div class="flex flex-col items-center gap-4 w-full max-w-md mx-auto mt-8">
+            <!-- Battery Slider -->
+            <div class="relative flex items-center justify-center" style="height:110px;">
+              <div class="flex items-end gap-0" style="position:relative;">
+                ${[1,2,3,4,5,6].map(idx => `
+                  <div
+                    class="flex flex-col items-center"
+                    style="margin-right:${idx < 6 ? '0.25rem' : '0'};"
+                  >
+                    <div
+                      class="transition-all duration-150"
+                      style="
+                        width:48px;
+                        height:80px;
+                        border:2px solid #000;
+                        border-radius:${idx===1?'8px 0 0 8px':idx===6?'0 8px 8px 0':'0'};
+                        background:${value >= idx ? '#8BC27D' : '#fff'};
+                        display:flex;
+                        align-items:center;
+                        justify-content:center;
+                        cursor:pointer;
+                        position:relative;
+                      "
+                      onclick="setSliderValue('${q.id}',${idx},${i})"
+                    ></div>
+                    <div class="text-black text-base font-normal font-['PP_Editorial_New'] mt-2">${idx}</div>
+                  </div>
+                `).join("")}
+                <!-- Battery Cap SVG (right side) -->
+                <div style="position:absolute;right:-18px;top:18px;">
+                  <svg width="15" height="44" viewBox="0 0 15 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M0 0H7C11.4183 0 15 3.58172 15 8V36C15 40.4183 11.4183 44 7 44H0V0Z" fill="black"/>
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="absolute left-0 w-full flex justify-between px-8 z-20" style="bottom: 80px;">
+          <button
+            class="rounded font-bold font-head px-5 py-2 text-[14px] transition
+              ${i === 0 ? 'opacity-50 pointer-events-none' : ''}"
+            style="background:${nextBg};color:${nextText};"
+            onclick="goBack()"
+            ${i === 0 ? 'disabled' : ''}
+          >&lt; ${t("previous")}</button>
+          <button
+            class="rounded font-bold font-head px-5 py-2 text-[14px] transition
+              ${value ? '' : 'opacity-50 pointer-events-none'}"
+            style="background:${nextBg};color:${nextText};"
+            id="next-btn"
+            onclick="goNext(${i})"
+            ${value ? '' : 'disabled'}
+          >${t("next")} &gt;</button>
+        </div>
+      </section>
+    `;
+    return;
+  }
+
   quizContainer.innerHTML = /*html*/`
     <section class="relative w-full min-h-screen overflow-hidden" style="background:${bgColor};">
       <!-- Small logo in top left -->
@@ -320,6 +400,9 @@ function renderQuestion(i) {
   `;
 }
 
+
+
+
 // Update selectAnswer to handle multi-select
 function selectAnswer(id, val, idx, isMulti = false) {
   const q = QUESTIONS[idx];
@@ -387,6 +470,7 @@ function renderByType(q) {
   return "<p>Unsupported question type</p>";
 }
 
+
 /* ────────────────────────────────────────────────────────────
    3.  STATE + NAVIGATION
    ────────────────────────────────────────────────────────────*/
@@ -413,11 +497,18 @@ function goNext(i) { if (answers[QUESTIONS[i].id]) { currentIndex = i + 1; rende
 const calcScores = () => {
   const scores = Object.fromEntries(DIMENSIONS.map(m => [m, 0]));
   QUESTIONS.forEach(q => {
-    if (!answers[q.id] || !q.options[0].effects) return;
+    if (!answers[q.id]) return;
+    // Handle slider effect function
+    if (q.type === "slider" && typeof q.effects === "function") {
+      const eff = q.effects(answers[q.id]);
+      if (eff) Object.entries(eff).forEach(([k, d]) => (scores[k] += d));
+      return;
+    }
+    // Handle normal options
+    if (!q.options || !q.options[0].effects) return;
     const opt = q.options.find(o => o.value === answers[q.id]);
     if (opt?.effects) Object.entries(opt.effects).forEach(([k, d]) => (scores[k] += d));
   });
-  // No clamping!
   return scores;
 };
 
@@ -465,6 +556,7 @@ function renderResults() {
     return `<img src="${img}" style="${style}" alt="" />`;
   }
 
+  // --- SHARE IMAGE BUTTON ---
   quizContainer.innerHTML = /*html*/`
     <section class="relative w-full min-h-screen flex flex-col items-center justify-center bg-black overflow-hidden">
       <!-- Logo in top left corner -->
@@ -503,24 +595,6 @@ function renderResults() {
           <div class="mt-8 text-center text-white text-2xl font-normal font-body">
             ${subtype}${archetype.title[LANG]}
           </div>
-          <div class="mt-2 text-center text-white text-base font-bold font-head lowercase tracking-tight">
-            ${
-              Object.entries(scores)
-                .map(([k, v]) => {
-                  if (k === "energy") {
-                    if (v > 0) return `<span class="mr-2">${t("energizing")}</span>`;
-                    if (v < 0) return `<span class="mr-2">${t("calm")}</span>`;
-                  }
-                  if (k === "tradition") {
-                    if (v > 0) return `<span class="mr-2">${t("tradition")}</span>`;
-                    if (v < 0) return `<span class="mr-2">${t("discovery")}</span>`;
-                  }
-                  return "";
-                })
-                .filter(Boolean)
-                .join(" · ")
-            }
-          </div>
         </div>
         <div class="w-80 mx-auto text-white text-sm mb-8" style="font-family:'Maison Neue',sans-serif;">
           ${description}
@@ -530,43 +604,42 @@ function renderResults() {
         </div>
         <div class="flex flex-wrap gap-8 items-stretch justify-center w-full max-w-4xl mb-8">
           ${
-            (() => {
-              const colorList = [
-                "#FEE843", // yellow
-                "#A49DCC", // purple
-                "#8BC27D", // green
-                "#F6DF00", // orange (use yellow as orange, or add your own)
-                "#F7C3D9"  // pink
-              ];
-              return recs
-                .filter(c => new Date(c.date) >= new Date())
-                .sort((a, b) =>
-                  new Date(`${a.date}T${(a.start ?? "00:00").slice(0,5)}`) -
-                  new Date(`${b.date}T${(b.start ?? "00:00").slice(0,5)}`)
-                )
-                .slice(0, 5)
-                .map((c, idx) => `
-                  <div class="flex-1 min-w-[260px] max-w-[320px] p-5 flex flex-col justify-between"
-                    style="background:${colorList[idx % colorList.length]}; border-radius:0; box-shadow:0 4px 24px 0 rgba(0,0,0,0.10);">
-                    <div>
-                      <div class="text-black text-sm font-bold font-head mb-2">${getDate(c)}, ${getTime(c)} Uhr</div>
-                      <div class="text-black text-base font-normal font-body mb-2">${c.titles}</div>
-                      <div class="text-black text-sm font-bold font-head mb-2">${c.venue}</div>
+            recs.length
+              ? recs
+                  .filter(c => new Date(c.date) >= new Date())
+                  .sort((a, b) =>
+                    new Date(`${a.date}T${(a.start ?? "00:00").slice(0,5)}`) -
+                    new Date(`${b.date}T${(b.start ?? "00:00").slice(0,5)}`)
+                  )
+                  .slice(0, 5)
+                  .map((c, idx) => `
+                    <div class="flex-1 min-w-[260px] max-w-[320px] p-5 flex flex-col justify-between"
+                      style="background:#FEE843; border-radius:0; box-shadow:0 4px 24px 0 rgba(0,0,0,0.10);">
+                      <div>
+                        <div class="text-black text-sm font-bold font-head mb-2">${getDate(c)}, ${getTime(c)} Uhr</div>
+                        <div class="text-black text-base font-normal font-body mb-2">${c.titles}</div>
+                        <div class="text-black text-sm font-bold font-head mb-2">${c.venue}</div>
+                      </div>
+                      <div class="w-full flex flex-col gap-2 mt-2">
+                        <a href="${c.link}" target="_blank" class="w-full p-2.5 bg-black inline-flex justify-center items-center gap-2.5 rounded text-white text-sm font-bold font-head">
+                          TICKET KAUFEN
+                        </a>
+                        <div class="text-black text-xs font-bold font-head">Preise: ${c.price || "siehe Website"}</div>
+                      </div>
                     </div>
-                    <div class="w-full flex flex-col gap-2 mt-2">
-                      <a href="${c.link}" target="_blank" class="w-full p-2.5 bg-black inline-flex justify-center items-center gap-2.5 rounded text-white text-sm font-bold font-head">
-                        TICKET KAUFEN
-                      </a>
-                      <div class="text-black text-xs font-bold font-head">Preise: ${c.price || "siehe Website"}</div>
-                    </div>
-                  </div>
-                `).join("");
-            })()
+                  `).join("")
+              : `<div class="text-white">${t("noMatches")}</div>`
           }
         </div>
-        <button class="btn btn-secondary mt-12" onclick="renderIntro()">${t("backToStart")}</button>
+        <div class="flex flex-col items-center gap-4 mt-4">
+          <button class="btn btn-primary" onclick="shareResultImage()">
+            <i class="fas fa-share mr-2"></i> ${t("shareImage")}
+          </button>
+          <button class="btn btn-secondary mt-2" onclick="renderIntro()">${t("backToStart")}</button>
+        </div>
       </div>
     </section>
+    ${renderShareCardHTML(archetype, subtype, description, recs)}
   `;
 }
 
@@ -607,123 +680,87 @@ function getTime(c) {
   return (c.start ?? "").slice(0, 5);
 }
 
-function renderMetricBars(scores) {
-  const axisLabels = {
-    energy:    { left: t("calm"), right: t("energizing") },
-    tradition: { left: t("discovery"), right: t("tradition") }
-  };
 
-  // Find the maximum absolute value for normalization
-  const maxAbs = Math.max(2, ...Object.values(scores).map(Math.abs)); // 2 is your max possible
 
-  return DIMENSIONS.map((m) => {
-    const val = scores[m];
-    const leftLabel = axisLabels[m]?.left || "Left";
-    const rightLabel = axisLabels[m]?.right || "Right";
-    // Normalize value to [-1, 1]
-    const norm = Math.max(-1, Math.min(1, val / maxAbs));
-    // Dot position: 0% (far left) to 100% (far right), 50% is center
-    const dotPos = 50 + norm * 50;
+/* ────────────────────────────────────────────────────────────
+   share-card (hidden poster) — identical fonts + layout
+   ────────────────────────────────────────────────────────────*/
+function renderShareCardHTML(archetype, subtype, description, recs) {
+  const archetypeImg = `assets/archetypes/${archetype.id}.png`;
+  const concert      = recs && recs.length ? recs[0] : null;
 
-    return `
-      <div class="flex flex-col gap-1 mb-2">
-        <div class="flex justify-between text-xs font-head text-gray-600 mb-1">
-          <span>${leftLabel}</span>
-          <span>${rightLabel}</span>
-        </div>
-        <div class="relative h-5 rounded-full overflow-hidden" style="background: linear-gradient(90deg, #7DD3FC 0%, #F6DF00 100%);">
-          <div style="
-            position:absolute;
-            top:50%; left:${dotPos}%;
-            transform:translate(-50%,-50%);
-            width:22px;height:22px;
-            background:#fff;
-            border:4px solid #222;
-            border-radius:50%;
-            box-shadow:0 2px 8px rgba(0,0,0,0.10);
-            z-index:2;
-            transition:left 0.3s;
-          "></div>
-        </div>
-        <div class="text-center text-xs text-gray-700 mt-1 font-mono">
-          ${Math.abs(val)} ${val === 0 ? "" : (val > 0 ? rightLabel : leftLabel)}
-        </div>
-      </div>
-    `;
-  }).join("");
-}
-
-function renderMetricsBarsForImage(scores) {
-  const axisLabels = {
-    energy:    { left: t("calm"), right: t("energizing") },
-    tradition: { left: t("discovery"), right: t("tradition") }
-  };
-  const maxAbs = Math.max(2, ...Object.values(scores).map(Math.abs));
-  return DIMENSIONS.map((m) => {
-    const val = scores[m];
-    const leftLabel = axisLabels[m]?.left || "Left";
-    const rightLabel = axisLabels[m]?.right || "Right";
-    const norm = Math.max(-1, Math.min(1, val / maxAbs));
-    const dotPos = 50 + norm * 50;
-    return `
-      <div style="margin-bottom:32px;">
-        <div style="display:flex;justify-content:space-between;font-family:'Maison Neue',sans-serif;font-size:22px;color:#666;margin-bottom:6px;">
-          <span>${leftLabel}</span>
-          <span>${rightLabel}</span>
-        </div>
-        <div style="position:relative;height:32px;border-radius:16px;overflow:hidden;background:linear-gradient(90deg,#7DD3FC 0%,#F6DF00 100%);">
-          <div style="
-            position:absolute;
-            top:50%; left:${dotPos}%;
-            transform:translate(-50%,-50%);
-            width:32px;height:32px;
-            background:#fff;
-            border:6px solid #222;
-            border-radius:50%;
-            box-shadow:0 2px 12px rgba(0,0,0,0.10);
-            z-index:2;
-            transition:left 0.3s;
-          "></div>
-        </div>
-        <div style="text-align:center;font-family:monospace;font-size:20px;color:#444;margin-top:6px;">
-          ${Math.abs(val)} ${val === 0 ? "" : (val > 0 ? rightLabel : leftLabel)}
-        </div>
-      </div>
-    `;
-  }).join("");
-}
-
-/* share-card (hidden poster) */
-function renderShareCardHTML(arch, scores, recs, subtype = "", description = "", subtypeKey = "romantic") {
-  const color = ARCHETYPE_COLORS[arch.id]?.[subtypeKey] || ARCHETYPE_COLORS[arch.id]?.base || "#ccc";
   return /*html*/`
-    <div id="share-card" style="width:1200px;height:1600px;position:fixed;left:-9999px;top:0;
-         background:#FFFBE6;display:flex;align-items:center;justify-content:center;pointer-events:none;">
-      <div style="width:940px;padding:72px 64px;background:white;border-radius:56px;
-                  box-shadow:0 16px 64px ${color}44;display:flex;flex-direction:column;align-items:center;">
-        <img src="assets/concert.jpg" alt="" style="width:620px;height:350px;object-fit:cover;border-radius:32px;margin-bottom:48px;">
-        <div style="font-family:'Maison Neue';font-size:72px;text-transform:uppercase;letter-spacing:.14em;
-                    color:${color};margin-bottom:32px;text-align:center;">
-          ${subtype}${arch.title[LANG]}
+    <div id="share-card"
+         class="fixed -left-[9999px] top-0 w-[700px] h-[900px] flex items-center justify-center
+                bg-black pointer-events-none z-[9999] font-body">
+
+      <div class="relative w-[600px] bg-[#181818] rounded-[32px] shadow-2xl p-12 flex flex-col items-center">
+
+        <!-- Logo: keep natural aspect-ratio so it never stretches -->
+        <img
+          src="assets/logo2.png"
+          alt="Logo"
+          class="absolute top-8 left-8 h-14 w-auto object-contain"
+        />
+
+        <!-- Archetype image with rainbow frame -->
+        <div class="mt-12">
+          <div class="relative w-[170px] h-[255px] mx-auto">
+            <div class="absolute inset-0 p-[5px] rounded-[20px]
+                        bg-[conic-gradient(#FEE843_0deg,#A49DCC_72deg,#8BC27D_144deg,#F7C3D9_216deg,#F6DF00_288deg,#FEE843_360deg)]">
+              <div class="w-[160px] h-[245px] rounded-[16px] overflow-hidden bg-white m-auto">
+                <img src="${archetypeImg}" alt="${archetype.title[LANG]}"
+                     class="w-full h-full object-cover" />
+              </div>
+            </div>
+          </div>
         </div>
-        <div style="font-family:'PPEditorialNew';font-size:38px;line-height:1.3;color:#222;text-align:center;max-width:760px;margin-bottom:56px;">
+
+        <!-- Title & copy – match results page -->
+        <div class="mt-9 text-white text-2xl font-normal font-body text-center">
+          ${subtype}${archetype.title[LANG]}
+        </div>
+
+        <p class="mt-4 mb-6 text-white text-base font-body text-center max-w-[420px]">
           ${description}
+        </p>
+
+        <!-- “Concert picks” heading -->
+        <div class="text-white text-xl font-body mb-4">
+          ${TRANSLATIONS[LANG].concertPicks}
         </div>
-        <div style="width:100%;margin-bottom:56px;">${renderMetricsForImage(scores, color)}</div>
-        <div style="font-family:'Maison Neue';font-size:34px;text-transform:uppercase;letter-spacing:.08em;color:#222;margin-bottom:24px;">
-          ${t("concertPicks")}
+
+        ${
+          concert ? `
+            <div class="w-full bg-[#FEE843] p-4 shadow-lg flex flex-col items-start">
+              <div class="text-black text-sm font-head font-bold mb-1">
+                ${getDate(concert)}, ${getTime(concert)} Uhr
+              </div>
+              <div class="text-black text-base font-body mb-1">
+                ${concert.titles}
+              </div>
+              <div class="text-black text-sm font-head font-bold mb-1">
+                ${concert.venue}
+              </div>
+              <div class="text-black text-xs font-head">
+                Preise: ${concert.price || "siehe Website"}
+              </div>
+            </div>
+          ` : `
+            <div class="text-white font-body">
+              ${TRANSLATIONS[LANG].noMatches}
+            </div>
+          `
+        }
+
+        <div class="mt-8 text-[#aaaaaa] text-sm font-body text-center">
+          mphil.de/quiz
         </div>
-        <ul style="width:100%;list-style:none;padding:0;margin:0 0 48px 0;">
-          ${recs.length ? recs.map(c=>`
-            <li style="margin-bottom:24px;padding:26px 32px;border-radius:24px;background:#FFFBE6;border:3px solid ${color};">
-              <div style="font-weight:800;font-size:32px;color:#222;">${c.title}</div>
-              <div style="font-size:24px;color:#666;margin-top:6px;">${c.date} – ${c.venue}</div>
-            </li>`).join("") : `<li style='font-size:28px;color:#888;'>${t("noMatches")}</li>`}
-        </ul>
-        <div style="font-family:'PPEditorialNew';font-size:26px;color:#999;">mphil.de/quiz</div>
       </div>
-    </div>`;
+    </div>
+  `;
 }
+
 
 function renderMetricsForImage(scores) {
   const axisLabels = {
@@ -890,4 +927,10 @@ window.playAudioClip = function(audioPath, btn) {
     btn._audio = null;
     if (window._currentAudio === audio) window._currentAudio = null;
   };
+};
+
+// Add this helper at the bottom of the file (or in the global window assignment section)
+window.setSliderValue = function(id, val, idx) {
+  answers[id] = val;
+  renderQuestion(idx);
 };
