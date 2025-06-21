@@ -1,8 +1,8 @@
 /*  concerts-filter.js  – v6
     ------------------------------------------------------------
     – 1) Archetyp: city, early-bird & numeric TExp/REnergy
-    – 2) Subtyp: single occasion-regex against every concert
-    – 3) Union both sets (no duplicates) → final return
+    – 2) Subtyp: single occasion-regex gegen alle Konzerte
+    – 3) Nur gefundene Subtype-Konzerte unionieren (keine Duplikate)
 ----------------------------------------------------------------*/
 
 import { CONCERTS } from "./concerts.js";
@@ -13,7 +13,7 @@ import { CONCERTS } from "./concerts.js";
 export const isEarly = (c) =>
     Number((c?.start ?? "25").split(":")[0]) < 19;
 
-// normalize for city comparison
+// normalize für City-Vergleich
 export const normalize = (s) =>
     (s ?? "")
         .toLowerCase()
@@ -21,19 +21,19 @@ export const normalize = (s) =>
         .replace(/[\u0300-\u036f]/g, "")
         .trim();
 
-// build one big text to run regexes on
+// baue einen einzigen Text, um die Regex drauf loszulassen
 const concatAll = (c) =>
     [c.title, c.programm, c.series, c.type, c.venue]
         .filter(Boolean)
         .join(" · ");
 
-/* ─────────────── 1) Occasion-Regex per Subtype ──────────────*/
+/* ─────────────── 1) Regex pro Subtyp ─────────────────────────*/
 
 const WORDS = {
-    family: /kammer|familien|kinder|kids?|kita|schul|school|jugend|youth|classroom|jugendchor|junior|matinee|mob|märchen|tiere|fabel|eltern|großeltern|märchenkonzert/i,
+    family:  /kammer|familien|kinder|kids?|kita|schul|school|jugend|youth|classroom|jugendchor|junior|matinee|mob|märchen|tiere|fabel|eltern|großeltern|märchenkonzert/i,
     friends: /jugend|youth|u30|unter ?30|uni|campus|student|classroom|rainbow|pride|late|afterwork|open\s*air|lounge|party|beats?|club|x?tra|freunde|new\s*year/i,
-    date: /kammer|klassik am odeonsplatz|odeonsplatz|romantic|valentin|candle|love|date|nacht|night|late|moon|silvester|new\s*year|weinachts?/i,
-    alone: /kammer|quartett?|quintett?|trio|duo|solo|rezit[ai]l|recital|liederabend|sonate|streich|intim|saal\s*x|hp8/i,
+    date:    /kammer|klassik am odeonsplatz|odeonsplatz|romantic|valentin|candle|love|date|nacht|night|late|moon|silvester|new\s*year|weinachts?/i,
+    alone:   /kammer|quartett?|quintett?|trio|duo|solo|rezit[ai]l|recital|liederabend|sonate|streich|intim|saal\s*x|hp8/i,
 };
 
 export const OCCASION_FOR_SUBTYPE = {
@@ -43,7 +43,7 @@ export const OCCASION_FOR_SUBTYPE = {
     independent: "alone"
 };
 
-/* ─────────────── 2) Archetyp-Presets  ───────────────────────*/
+/* ─────────────── 2) Archetyp-Presets ────────────────────────*/
 
 const ARCHETYPE_PRESETS = {
     connoisseur: { city: "München", early: undefined },
@@ -52,10 +52,10 @@ const ARCHETYPE_PRESETS = {
     bohemian:    { city: "München", early: undefined },
 };
 
-/* ──────────── 3) Main Helper for Quiz  ───────────────────────*/
+/* ──────────── 3) Hauptfunktion für das Quiz ──────────────────*/
 
 export function getConcertsForResult(archetypeId, subtypeKey) {
-    // 1) Archetype filters
+    // 1) Archetyp-Filter
     const { city, early } = ARCHETYPE_PRESETS[archetypeId] || {};
     let base = CONCERTS.filter(c => {
         const cityOk  = !city  || normalize(c.city) === normalize(city);
@@ -63,7 +63,7 @@ export function getConcertsForResult(archetypeId, subtypeKey) {
         return cityOk && earlyOk;
     });
 
-    // 2) Numeric TExp / REnergy per archetype
+    // 2) Numerische TExp / REnergy pro Archetyp
     switch (archetypeId) {
         case "connoisseur":
             base = base.filter(c =>
@@ -89,27 +89,30 @@ export function getConcertsForResult(archetypeId, subtypeKey) {
             break;
     }
 
-    // 3) Subtype filter applied to *all* concerts
+    // 3) Subtyp-Regex über alle Konzerte
     const occasionTag = OCCASION_FOR_SUBTYPE[subtypeKey];
-    const second = occasionTag
+    const subtypeMatches = occasionTag
         ? CONCERTS.filter(c => WORDS[occasionTag].test(concatAll(c)))
         : [];
 
-    // 4) Union both arrays (dedupe by object reference)
-    const union = [...base];
-    for (const c of second) {
-        if (!union.includes(c)) union.push(c);
+    // 4) Nur wenn es Subtyp-Matches gab, unioniere
+    let result = base;
+    if (subtypeMatches.length > 0) {
+        result = [...base];
+        for (const c of subtypeMatches) {
+            if (!result.includes(c)) result.push(c);
+        }
     }
 
-    // 5) Cache (optional)
+    // 5) Optional: Cache
     try {
         localStorage.setItem(
             `mphil-concerts-${archetypeId}-${subtypeKey}`,
-            JSON.stringify(union)
+            JSON.stringify(result)
         );
-    } catch { /**/ }
+    } catch {}
 
-    return union;
+    return result;
 }
 
 export default { getConcertsForResult };
