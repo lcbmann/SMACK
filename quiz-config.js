@@ -26,9 +26,10 @@ export const TRANSLATIONS = {
     calm:            "Calm",
     tradition:       "Tradition",
     discovery:       "Discovery",
-    whichConcertType: "Which concert type suits you best?",
+    whichConcertType: "Which concert type are you?",
     previous:       "Previous",
     next:           "Next",
+    introShort: "Discover your perfect concert vibe with personalised tips from the Münchner Philharmoniker.",
   },
   de: {
     discover:        "Entdecken",
@@ -47,11 +48,28 @@ export const TRANSLATIONS = {
     calm:            "Ruhig",
     tradition:       "Tradition",
     discovery:       "Entdeckung",
-    whichConcertType: "Welches Konzerterlebnis passt am besten zu Ihnen?",
+    whichConcertType: "Welcher Konzerttyp sind Sie?",
     previous:       "Vorherige",
     next:           "Nächste",
+    introShort: "Entdecken Sie Ihr perfektes Konzerterlebnis mit persönlichen Tipps der Münchner Philharmoniker.",
   }
 };
+
+/* ────────────────────────────────────────────────────────────
+   COLOR VARIABLES
+   ────────────────────────────────────────────────────────────
+   */
+export const COLORS = {
+  green:      "#8BC27D",
+  pink:       "#F7C3D9",
+  purple:     "#A49DCC",
+  blue:       "#78C3E9",
+  yellow:     "#FEE843",
+  black:      "#000",
+  white:      "#fff",
+  lightYellow:"#fffbe6"
+};
+
 
 /* ────────────────────────────────────────────────────────────
    QUIZ DATA
@@ -66,13 +84,14 @@ export const QUESTIONS = [
       en: "What kind of mood are you in when you go to a concert?",
       de: "In welcher Stimmung gehen Sie ins Konzert?"
     },
-    // Pastel green (already set)
-    bgColor: "#8BC27D",
-    optionBg: "#F7C3D9",
-    optionText: "#000",
-    optionBorder: "#000",
-    nextBg: "#FEE843",
-    nextText: "#000",
+    bgColor: COLORS.green,
+    optionBg: COLORS.pink,
+    optionText: COLORS.black,
+    optionBorder: COLORS.black,
+    nextBg: COLORS.yellow,
+    nextText: COLORS.black,
+    shapeImg: "assets/shapes/shapes3.png", // bottom right
+    shapePos: "bottom-right",
     options: [
       {
         value: "energizing",
@@ -103,13 +122,14 @@ export const QUESTIONS = [
       en: "What kind of concert vibe do you enjoy?",
       de: "Welche Art Konzertatmosphäre gefällt Ihnen?"
     },
-    // Pastel purple
-    bgColor: "#A49DCC",
-    optionBg: "#FEE843", // yellow option buttons for contrast
-    optionText: "#000",
-    optionBorder: "#000",
-    nextBg: "#F7C3D9",   // pink next/back button for variety
-    nextText: "#000",
+    bgColor: COLORS.pink,
+    optionBg: COLORS.yellow,
+    optionText: COLORS.black,
+    optionBorder: COLORS.black,
+    nextBg: COLORS.yellow,
+    nextText: COLORS.black,
+    shapeImg: "assets/shapes/shapes4.png", // bottom left
+    shapePos: "bottom-left",
     options: [
       {
         value: "tradition",
@@ -140,13 +160,14 @@ export const QUESTIONS = [
       en: "Who are you most likely to go to a concert with?",
       de: "Mit wem gehen Sie am ehesten ins Konzert?"
     },
-    // Pastel blue
-    bgColor: "#78C3E9",
-    optionBg: "#fffbe6", // light yellow for contrast
-    optionText: "#000",
-    optionBorder: "#000",
-    nextBg: "#A49DCC",   // purple next/back button for variety
-    nextText: "#000",
+    bgColor: COLORS.blue,
+    optionBg: COLORS.lightYellow,
+    optionText: COLORS.black,
+    optionBorder: COLORS.black,
+    nextBg: COLORS.purple,
+    nextText: COLORS.black,
+    shapeImg: "assets/shapes/shapes5.png", // bottom right
+    shapePos: "bottom-right",
     options: [
       { value: "romantic",    label: { en: "A date",   de: "Ein Date"    }, icon: "fas fa-heart"        },
       { value: "connected",   label: { en: "Family",   de: "Familie"     }, icon: "fas fa-users"        },
@@ -161,16 +182,59 @@ export const QUESTIONS = [
       en: "Which concert setting do you prefer?",
       de: "Welches Konzert-Setting bevorzugen Sie?"
     },
-    // Pastel orange/yellow
-    bgColor: "#FEE843",
-    optionBg: "#000",    // black option buttons for contrast
-    optionText: "#fff",
-    optionBorder: "#000",
-    nextBg: "#78C3E9",   // blue next/back button for variety
-    nextText: "#000",
+    bgColor: COLORS.yellow,
+    optionBg: COLORS.black,
+    optionText: COLORS.white,
+    optionBorder: COLORS.black,
+    nextBg: COLORS.blue,
+    nextText: COLORS.black,
+    shapeImg: "assets/shapes/shapes6.png", // bottom left
+    shapePos: "bottom-left",
     options: [
       { value: "formal",   label: { en: "Formal Hall",   de: "Konzertsaal" }, icon: "fas fa-building" },
       { value: "casual",   label: { en: "Casual Venue",  de: "Lockerer Ort" }, icon: "fas fa-coffee"  }
+    ]
+  },
+  {
+    id: "q5",
+    type: "choice",
+    text: {
+      en: "Which time of day do you prefer for concerts?",
+      de: "Zu welcher Tageszeit gehen Sie am liebsten ins Konzert?"
+    },
+    bgColor: COLORS.purple,
+    optionBg: COLORS.pink,
+    optionText: COLORS.black,
+    optionBorder: COLORS.black,
+    nextBg: COLORS.yellow,
+    nextText: COLORS.black,
+    shapeImg: "assets/shapes/shapes7.png", // bottom right
+    shapePos: "bottom-right",
+    options: [
+      { value: "evening", label: { en: "Evening", de: "Abends" } },
+      { value: "afternoon", label: { en: "Afternoon", de: "Nachmittags" } },
+      { value: "morning", label: { en: "Morning", de: "Morgens" } }
+    ]
+  },
+  {
+    id: "q6",
+    type: "choice",
+    text: {
+      en: "Which seat do you prefer?",
+      de: "Welchen Sitzplatz bevorzugen Sie?"
+    },
+    bgColor: COLORS.yellow,
+    optionBg: COLORS.black,
+    optionText: COLORS.white,
+    optionBorder: COLORS.black,
+    nextBg: COLORS.blue,
+    nextText: COLORS.black,
+    shapeImg: "assets/shapes/shapes8.png", // bottom left
+    shapePos: "bottom-left",
+    options: [
+      { value: "front", label: { en: "Front row", de: "Vorne" } },
+      { value: "middle", label: { en: "Middle", de: "Mitte" } },
+      { value: "back", label: { en: "Back", de: "Hinten" } }
     ]
   }
 ];

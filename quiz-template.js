@@ -60,11 +60,11 @@ function renderIntro() {
 
       <!-- Main content -->
       <div class="relative z-20 flex flex-col items-center justify-center w-full">
-        <div class="text-white text-center font-head text-3xl sm:text-5xl md:text-4xl lg:text-5xl mb-8 drop-shadow-lg tracking-tight uppercase" style="letter-spacing:.12em;">
+        <div class="text-white text-center font-head text-2xl sm:text-3xl md:text-3xl lg:text-4xl mb-6 drop-shadow-lg tracking-tight uppercase mx-auto max-w-sm" style="letter-spacing:.12em;">
           ${t("whichConcertType")}
         </div>
-        <p class="text-lg text-gray-200 mb-10 max-w-md mx-auto font-body text-center">
-          ${t("intro")}
+        <p class="text-base text-gray-200 mb-8 max-w-xs mx-auto font-body text-center">
+          ${t("introShort") /* Use a shortened description key */}
         </p>
         <div class="flex flex-col gap-4 w-full max-w-xs mx-auto">
           ${
@@ -109,60 +109,73 @@ function renderQuestion(i) {
 
   const hasAnswer = !!answers[q.id];
 
+  // Shape image logic (larger for shapes7 and shapes8)
+  let shapeImgHtml = "";
+  if (q.shapeImg && q.shapePos) {
+    let width = 140; // default increased size
+    if (q.shapeImg.includes("shapes7") || q.shapeImg.includes("shapes8")) {
+      width = 180; // even larger for shapes7 and shapes8
+    }
+    if (q.shapePos === "bottom-right") {
+      shapeImgHtml = `<img src="${q.shapeImg}" class="absolute bottom-0 right-0 z-10 pointer-events-none object-contain" style="width:${width}px; height:auto; max-width:40vw;" alt="" />`;
+    } else if (q.shapePos === "bottom-left") {
+      shapeImgHtml = `<img src="${q.shapeImg}" class="absolute bottom-0 left-0 z-10 pointer-events-none object-contain" style="width:${width}px; height:auto; max-width:40vw;" alt="" />`;
+    }
+  }
+
   quizContainer.innerHTML = /*html*/`
-    <section class="relative w-full min-h-screen flex flex-col items-center justify-center overflow-hidden" style="background:${bgColor};">
-      <!-- Top right purple shape image -->
-      <img src="assets/shapes/shapes1.png"
-           class="absolute top-0 right-0 z-10 pointer-events-none object-contain"
-           style="width:120px; height:auto; max-width:40vw;" alt="" />
+    <section class="relative w-full min-h-screen overflow-hidden" style="background:${bgColor};">
+      <!-- Small logo in top left -->
+      <img src="assets/logo.png" alt="Logo" class="absolute top-4 left-4 z-20 w-12 h-12 object-contain pointer-events-none" />
 
-      <!-- Bottom left pink shape image -->
-      <img src="assets/shapes/shapes2.png"
-           class="absolute bottom-0 left-0 z-10 pointer-events-none object-contain"
-           style="width:70px; height:auto; max-width:22vw;" alt="" />
+      <!-- Per-question shape image -->
+      ${shapeImgHtml}
 
-      <!-- Progress text -->
-      <div class="absolute top-8 left-1/2 -translate-x-1/2 text-black font-serif" style="font-family:'PP Editorial New',serif;font-size:14px;">
-        ${t("question", i + 1, QUESTIONS.length)}
+      <div class="flex flex-col items-center w-full min-h-screen pt-24 pb-12">
+        <!-- Progress text -->
+        <div class="mb-4 text-black font-serif" style="font-family:'PP Editorial New',serif;font-size:14px;">
+          ${t("question", i + 1, QUESTIONS.length)}
+        </div>
+
+        <!-- Question text (higher on the page) -->
+        <div class="mb-8 w-full flex justify-center">
+          <h3 class="text-black text-2xl sm:text-3xl font-serif text-center mx-auto max-w-xs" style="font-family:'PP Editorial New',serif;font-weight:400;">
+            ${q.text[LANG]}
+          </h3>
+        </div>
+
+        <!-- Answer options (lowered with mt-8) -->
+        <div class="w-full flex flex-wrap justify-center gap-6 mb-16 mt-8">
+          ${q.options.map((opt, idx) => {
+            const selected = answers[q.id] === opt.value;
+            return `
+              <button
+                class="
+                  border px-4 py-8 flex items-center justify-center
+                  font-bold font-head text-[14px] text-center transition cursor-pointer
+                  hover:shadow-lg hover:-translate-y-1 active:translate-y-0.5
+                  focus:outline-none focus:ring-2 focus:ring-[#FEE843]
+                  ${selected ? 'ring-4 ring-[#FEE843]' : ''}
+                "
+                style="
+                  width: 150px; min-height: 108px;
+                  background: ${optionBg};
+                  color: ${optionText};
+                  border-color: ${optionBorder};
+                  border-radius: 0;
+                  box-shadow: ${selected ? '0 0 0 3px #FEE843' : 'none'};
+                "
+                onclick="selectAnswer('${q.id}','${opt.value}',${i})"
+              >
+                ${opt.label[LANG]}
+              </button>
+            `;
+          }).join("")}
+        </div>
       </div>
 
-      <!-- Question text (narrower and higher) -->
-      <div class="mt-16 mb-8 w-full flex justify-center">
-        <h3 class="text-black text-2xl sm:text-3xl font-serif text-center mx-auto max-w-md" style="font-family:'PP Editorial New',serif;font-weight:400;">
-          ${q.text[LANG]}
-        </h3>
-      </div>
-
-      <!-- Answer options -->
-      <div class="w-full flex flex-wrap justify-center gap-6 mb-16">
-        ${q.options.map((opt, idx) => {
-          const selected = answers[q.id] === opt.value;
-          return `
-            <button
-              class="
-                border rounded-xl px-4 py-8 flex items-center justify-center
-                font-bold font-head text-[14px] text-center transition cursor-pointer
-                hover:shadow-lg hover:-translate-y-1 active:translate-y-0.5
-                focus:outline-none focus:ring-2 focus:ring-[#FEE843]
-                ${selected ? 'ring-4 ring-[#FEE843]' : ''}
-              "
-              style="
-                width: 150px; min-height: 108px;
-                background: ${optionBg};
-                color: ${optionText};
-                border-color: ${optionBorder};
-                box-shadow: ${selected ? '0 0 0 3px #FEE843' : 'none'};
-              "
-              onclick="selectAnswer('${q.id}','${opt.value}',${i})"
-            >
-              ${opt.label[LANG]}
-            </button>
-          `;
-        }).join("")}
-      </div>
-
-      <!-- Navigation buttons -->
-      <div class="absolute bottom-8 left-0 w-full flex justify-between px-8">
+      <!-- Navigation buttons (raised up further and above shapes) -->
+      <div class="absolute left-0 w-full flex justify-between px-8 z-20" style="bottom: 140px;">
         <button
           class="rounded font-bold font-head px-5 py-2 text-[14px] transition
             ${i === 0 ? 'opacity-50 pointer-events-none' : ''}"
