@@ -169,12 +169,13 @@ function renderQuestion(i) {
                 >
                   <button
                     type="button"
-                    class="ml-2 bg-transparent text-black rounded-full flex items-center justify-center"
+                    class="ml-2 bg-transparent text-black rounded-full flex items-center justify-center quiz-audio-btn"
+                    data-audio-src="${opt.audio}"
                     onclick="event.stopPropagation(); playAudioClip('${opt.audio}', this);"
                     title="${t('playAudio')}"
                     tabindex="-1"
                   >
-                    <i class="fas fa-play"></i>
+                    <i class="fas ${window._currentQuizAudio && !window._currentQuizAudio.paused && window._currentQuizAudio.src.endsWith(opt.audio) ? 'fa-pause' : 'fa-play'}"></i>
                   </button>
                   <div class="flex flex-col flex-1 min-w-0 ml-2">
                     <div class="text-sm font-bold font-['Maison_Neue']" style="color:${textColor};">${opt.label[LANG]}</div>
@@ -936,7 +937,7 @@ renderIntro();
 
 Object.assign(window,{
   startQuiz, viewSavedResult, clearSavedResultAndRetake,
-  selectAnswer, goBack, goNext, handleTextInput, renderIntro, shareResultImage, toggleLang
+  selectAnswer, goBack, goNext, handleTextInput, renderIntro, shareResultImage, toggleLang, playAudioClip
 });
 
 function viewSavedResult() {
@@ -980,3 +981,49 @@ window.setSliderValue = function(id, val, idx) {
   answers[id] = val;
   renderQuestion(idx);
 };
+
+function playAudioClip(src, btn) {
+  // Pause any currently playing audio
+  if (window._currentQuizAudio && !window._currentQuizAudio.paused) {
+    window._currentQuizAudio.pause();
+    window._currentQuizAudio.currentTime = 0;
+  }
+  // If the same audio is clicked again, just stop it and update icons
+  if (window._currentQuizAudio && window._currentQuizAudio.src.endsWith(src)) {
+    window._currentQuizAudio = null;
+    updateAudioIcons();
+    return;
+  }
+  // Create and play new audio
+  const audio = new Audio(src);
+  window._currentQuizAudio = audio;
+  audio.play();
+  updateAudioIcons();
+
+  audio.onended = () => {
+    window._currentQuizAudio = null;
+    updateAudioIcons();
+  };
+  audio.onpause = () => {
+    updateAudioIcons();
+  };
+}
+
+// Helper to update all play/pause icons
+function updateAudioIcons() {
+  document.querySelectorAll('.quiz-audio-btn').forEach(btn => {
+    const icon = btn.querySelector('i');
+    const src = btn.getAttribute('data-audio-src');
+    if (
+      window._currentQuizAudio &&
+      !window._currentQuizAudio.paused &&
+      window._currentQuizAudio.src.endsWith(src)
+    ) {
+      icon.classList.remove('fa-play');
+      icon.classList.add('fa-pause');
+    } else {
+      icon.classList.remove('fa-pause');
+      icon.classList.add('fa-play');
+    }
+  });
+}
