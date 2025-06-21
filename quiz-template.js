@@ -22,6 +22,7 @@ import { getConcertsForResult } from "./concert-filters.js";
 const quizContainer = document.getElementById("quiz-container");
 let answers = {};
 let currentIndex = 0;
+let showMore = false;
 
 /* ────────────────────────────────────────────────────────────
    2.  RENDERING HELPERS
