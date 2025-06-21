@@ -416,7 +416,7 @@ function renderQuestion(i) {
             ${q.text[LANG]}
           </h3>
         </div>
-        <div class="w-full flex flex-wrap justify-center gap-6 mb-16 mt-8">
+        <div class="quiz-answers-row w-full flex flex-wrap justify-center gap-6 mb-16 mt-8">
           ${q.options.map((opt, idx) => {
             const selected = isMulti
               ? Array.isArray(selectedAnswers) && selectedAnswers.includes(opt.value)
@@ -974,7 +974,21 @@ window.setLangAndRerender = setLangAndRerender;
 
 document.addEventListener("click", function(e) {
   const btn = document.getElementById("lang-toggle-btn");
+  const dropdown = document.getElementById("lang-dropdown");
+  if (!btn || !dropdown) return;
+
+  // If the globe button is clicked, toggle the dropdown
+  if (btn.contains(e.target)) {
+    dropdown.classList.toggle("hidden");
+    return;
+  }
+
+  // If click is outside the dropdown, hide it
+  if (!dropdown.contains(e.target)) {
+    dropdown.classList.add("hidden");
+  }
 });
+
 
 // Add this helper at the bottom of the file (or in the global window assignment section)
 window.setSliderValue = function(id, val, idx) {

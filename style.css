@@ -163,3 +163,24 @@ body{
 .animate-fadein {
   animation: fadein 0.7s cubic-bezier(.4,0,.2,1);
 }
+
+/* Quiz answer button sizing for mobile */
+.quiz-answer-btn {
+  max-width: 140px;
+  min-height: 90px;
+  padding: 16px 6px;
+  font-size: 0.95rem;
+}
+@media (max-width: 640px) {
+  .quiz-answer-btn {
+    max-width: 110px;
+    min-height: 70px;
+    padding: 10px 2px;
+    font-size: 0.90rem;
+  }
+  .quiz-answers-row {
+    gap: 10px !important;
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
+}
