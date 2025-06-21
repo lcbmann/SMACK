@@ -1,6 +1,4 @@
-// concert-filters.js ──────────────────────────────────────────
-// Filter‑ und Caching‑Logik für die Konzert­auswahl nach Archetyp
-// (Connoisseur, Pioneer, Purist, Wanderer)
+
 
 import { CONCERTS } from "./concerts.js"; // komplette Konzert‑Liste
 
@@ -11,7 +9,7 @@ const isEarly = (c) => {
     return Number(hh) < 19; // NaN wird zu false
 };
 
-/** macht aus "München" → "munchen" für robuste Vergleiche */
+
 const normalize = (s) =>
     (s ?? "")
         .toLowerCase()
@@ -40,7 +38,7 @@ const PRESETS = {
     wanderer:    { city: "München" }
 };
 
-// ─── Öffentliche API ─────────────────────────────────────────
+
 /**
  * Liefert gefilterte Konzerte für ein Ergebnis‑Archetyp
  * und cached sie in localStorage (Key: mphil-concerts-<id>).
