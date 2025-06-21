@@ -8,9 +8,9 @@
 ----------------------------------------------------------------*/
 
 //EARLY BIRD STUFF FOR AMELIE
-import { getIsEarlyBird } from './quiz-config.js';
+//import { getIsEarlyBird } from './quiz-config.js';
 // ...
-const isEarlyBird = getIsEarlyBird(answers); // true, false, or undefined
+//const isEarlyBird = getIsEarlyBird(answers); // true, false, or undefined
 
 
 
