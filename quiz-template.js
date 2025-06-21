@@ -41,15 +41,15 @@ function renderIntro() {
       <img src="assets/concert2.jpg" class="fixed inset-0 w-full h-full object-cover z-0" alt="" />
       <div class="fixed inset-0 bg-black/60 z-0"></div>
 
-      <!-- Top right purple shape image (flush with top right) -->
+      <!-- Top right purple shape image (overlap top right corner) -->
       <img src="assets/shapes/shapes1.png"
-           class="absolute top-0 right-0 z-10 pointer-events-none object-contain"
-           style="width:120px; height:auto; max-width:40vw;" alt="" />
+           class="absolute top-0 right-0 z-20 pointer-events-none object-contain"
+           style="width:150px; height:auto; max-width:40vw;" alt="" />
 
-      <!-- Bottom left pink shape image (flush with bottom left, smaller) -->
+      <!-- Bottom left pink shape image (overlap bottom left corner, smaller) -->
       <img src="assets/shapes/shapes2.png"
-           class="absolute bottom-0 left-0 z-10 pointer-events-none object-contain"
-           style="width:70px; height:auto; max-width:22vw;" alt="" />
+           class="absolute bottom-0 left-0 z-20 pointer-events-none object-contain"
+           style="width:60px; height:auto; max-width:22vw; left:-2px; bottom:-12px;" alt="" />
 
       <!-- Yellow "M" SVG (top left, keep as SVG for sharpness) -->
       <div class="absolute" style="left:24px; top:39px; z-index:11;">
@@ -99,34 +99,88 @@ function renderQuestion(i) {
   const q = QUESTIONS[i];
   if (!q) return renderResults();
 
-  const progress = Math.round(((i + 1) / QUESTIONS.length) * 100);
+  // Use per-question colors or fallback
+  const bgColor      = q.bgColor      || "#8BC27D";
+  const optionBg     = q.optionBg     || "#F7C3D9";
+  const optionText   = q.optionText   || "#000";
+  const optionBorder = q.optionBorder || "#000";
+  const nextBg       = q.nextBg       || "#FEE843";
+  const nextText     = q.nextText     || "#000";
+
+  const hasAnswer = !!answers[q.id];
 
   quizContainer.innerHTML = /*html*/`
-    <div class="relative max-w-2xl mx-auto bg-white/95 rounded-3xl shadow-2xl px-8 py-12">
-      <div class="absolute -top-6 left-1/2 -translate-x-1/2 w-24 h-2 bg-[var(--mphil-yellow)] rounded-full shadow-lg"></div>
+    <section class="relative w-full min-h-screen flex flex-col items-center justify-center overflow-hidden" style="background:${bgColor};">
+      <!-- Top right purple shape image -->
+      <img src="assets/shapes/shapes1.png"
+           class="absolute top-0 right-0 z-10 pointer-events-none object-contain"
+           style="width:120px; height:auto; max-width:40vw;" alt="" />
 
-      <!-- progress bar -->
-      <div class="fixed top-0 left-0 w-full z-30">
-        <div class="mx-auto max-w-2xl px-8 pt-6">
-          <div class="progress-track h-3 bg-gray-200 rounded-full shadow">
-            <div class="progress-bar h-3 rounded-full" style="width:${progress}%"></div>
-          </div>
-        </div>
+      <!-- Bottom left pink shape image -->
+      <img src="assets/shapes/shapes2.png"
+           class="absolute bottom-0 left-0 z-10 pointer-events-none object-contain"
+           style="width:70px; height:auto; max-width:22vw;" alt="" />
+
+      <!-- Progress text -->
+      <div class="absolute top-8 left-1/2 -translate-x-1/2 text-black font-serif" style="font-family:'PP Editorial New',serif;font-size:14px;">
+        ${t("question", i + 1, QUESTIONS.length)}
       </div>
 
-      <div class="mb-8 flex justify-between text-sm text-gray-500 font-head">
-        <span>${t("question", i + 1, QUESTIONS.length)}</span><span>${progress}%</span>
+      <!-- Question text (narrower and higher) -->
+      <div class="mt-16 mb-8 w-full flex justify-center">
+        <h3 class="text-black text-2xl sm:text-3xl font-serif text-center mx-auto max-w-md" style="font-family:'PP Editorial New',serif;font-weight:400;">
+          ${q.text[LANG]}
+        </h3>
       </div>
 
-      <h3 class="text-3xl font-head mb-8 tracking-tight">${q.text[LANG]}</h3>
-      ${renderByType(q)}
-
-      <div class="flex justify-between mt-10">
-        <button class="btn btn-secondary ${i === 0 ? 'opacity-30 cursor-not-allowed' : ''}" ${i === 0 ? 'disabled' : ''} onclick="goBack()">← Back</button>
-        <button id="next-btn" class="btn btn-primary ${answers[q.id] ? '' : 'opacity-30 cursor-not-allowed'}"
-                ${answers[q.id] ? '' : 'disabled'} onclick="goNext(${i})">Next →</button>
+      <!-- Answer options -->
+      <div class="w-full flex flex-wrap justify-center gap-6 mb-16">
+        ${q.options.map((opt, idx) => {
+          const selected = answers[q.id] === opt.value;
+          return `
+            <button
+              class="
+                border rounded-xl px-4 py-8 flex items-center justify-center
+                font-bold font-head text-[14px] text-center transition cursor-pointer
+                hover:shadow-lg hover:-translate-y-1 active:translate-y-0.5
+                focus:outline-none focus:ring-2 focus:ring-[#FEE843]
+                ${selected ? 'ring-4 ring-[#FEE843]' : ''}
+              "
+              style="
+                width: 150px; min-height: 108px;
+                background: ${optionBg};
+                color: ${optionText};
+                border-color: ${optionBorder};
+                box-shadow: ${selected ? '0 0 0 3px #FEE843' : 'none'};
+              "
+              onclick="selectAnswer('${q.id}','${opt.value}',${i})"
+            >
+              ${opt.label[LANG]}
+            </button>
+          `;
+        }).join("")}
       </div>
-    </div>`;
+
+      <!-- Navigation buttons -->
+      <div class="absolute bottom-8 left-0 w-full flex justify-between px-8">
+        <button
+          class="rounded font-bold font-head px-5 py-2 text-[14px] transition
+            ${i === 0 ? 'opacity-50 pointer-events-none' : ''}"
+          style="background:${nextBg};color:${nextText};"
+          onclick="goBack()"
+          ${i === 0 ? 'disabled' : ''}
+        >&lt; ${t("previous")}</button>
+        <button
+          class="rounded font-bold font-head px-5 py-2 text-[14px] transition
+            ${hasAnswer ? '' : 'opacity-50 pointer-events-none'}"
+          style="background:${nextBg};color:${nextText};"
+          id="next-btn"
+          onclick="goNext(${i})"
+          ${hasAnswer ? '' : 'disabled'}
+        >${t("next")} &gt;</button>
+      </div>
+    </section>
+  `;
 }
 
 function renderByType(q) {

@@ -27,6 +27,8 @@ export const TRANSLATIONS = {
     tradition:       "Tradition",
     discovery:       "Discovery",
     whichConcertType: "Which concert type suits you best?",
+    previous:       "Previous",
+    next:           "Next",
   },
   de: {
     discover:        "Entdecken",
@@ -46,6 +48,8 @@ export const TRANSLATIONS = {
     tradition:       "Tradition",
     discovery:       "Entdeckung",
     whichConcertType: "Welches Konzerterlebnis passt am besten zu Ihnen?",
+    previous:       "Vorherige",
+    next:           "Nächste",
   }
 };
 
@@ -62,6 +66,13 @@ export const QUESTIONS = [
       en: "What kind of mood are you in when you go to a concert?",
       de: "In welcher Stimmung gehen Sie ins Konzert?"
     },
+    // Pastel green (already set)
+    bgColor: "#8BC27D",
+    optionBg: "#F7C3D9",
+    optionText: "#000",
+    optionBorder: "#000",
+    nextBg: "#FEE843",
+    nextText: "#000",
     options: [
       {
         value: "energizing",
@@ -92,6 +103,13 @@ export const QUESTIONS = [
       en: "What kind of concert vibe do you enjoy?",
       de: "Welche Art Konzertatmosphäre gefällt Ihnen?"
     },
+    // Pastel purple
+    bgColor: "#A49DCC",
+    optionBg: "#FEE843", // yellow option buttons for contrast
+    optionText: "#000",
+    optionBorder: "#000",
+    nextBg: "#F7C3D9",   // pink next/back button for variety
+    nextText: "#000",
     options: [
       {
         value: "tradition",
@@ -122,11 +140,37 @@ export const QUESTIONS = [
       en: "Who are you most likely to go to a concert with?",
       de: "Mit wem gehen Sie am ehesten ins Konzert?"
     },
+    // Pastel blue
+    bgColor: "#78C3E9",
+    optionBg: "#fffbe6", // light yellow for contrast
+    optionText: "#000",
+    optionBorder: "#000",
+    nextBg: "#A49DCC",   // purple next/back button for variety
+    nextText: "#000",
     options: [
       { value: "romantic",    label: { en: "A date",   de: "Ein Date"    }, icon: "fas fa-heart"        },
       { value: "connected",   label: { en: "Family",   de: "Familie"     }, icon: "fas fa-users"        },
       { value: "social",      label: { en: "Friends",  de: "Freunde"     }, icon: "fas fa-glass-cheers" },
       { value: "independent", label: { en: "Alone",    de: "Allein"      }, icon: "fas fa-user"         }
+    ]
+  },
+  {
+    id: "q4",
+    type: "choice",
+    text: {
+      en: "Which concert setting do you prefer?",
+      de: "Welches Konzert-Setting bevorzugen Sie?"
+    },
+    // Pastel orange/yellow
+    bgColor: "#FEE843",
+    optionBg: "#000",    // black option buttons for contrast
+    optionText: "#fff",
+    optionBorder: "#000",
+    nextBg: "#78C3E9",   // blue next/back button for variety
+    nextText: "#000",
+    options: [
+      { value: "formal",   label: { en: "Formal Hall",   de: "Konzertsaal" }, icon: "fas fa-building" },
+      { value: "casual",   label: { en: "Casual Venue",  de: "Lockerer Ort" }, icon: "fas fa-coffee"  }
     ]
   }
 ];
