@@ -500,12 +500,18 @@ function getTitle(c) {
 }
 
 function getDetails(c) {
-  const raw    = cleanQuotes(c.titles ?? "");
-  const parts  = raw.split(";").slice(1)
+  // 1️⃣  Primär das Feld “programm” verwenden
+  const src = (c.programm && c.programm.trim())
+      ? c.programm
+      : (c.titles ?? "");
+
+  // 2️⃣  Anführungszeichen säubern und Semikolons ersetzen
+  return cleanQuotes(src)
+      .split(";")
       .map(s => s.trim())
-      .filter(Boolean);
-  return parts.join(" - ");
+      .join(" - ");
 }
+
 
 function getDate(c) {
   return (c.date ?? "").split(" ")[0];
