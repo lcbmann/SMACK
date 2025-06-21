@@ -570,9 +570,31 @@ function renderResults() {
    ────────────────────────────────────────────────────────────*/
 
 
-function getTitle(c) {
-  return (c.titles ?? "").split(";")[0].trim() || "Konzert";
+
+function cleanQuotes(str = "") {
+
+  return str.replace(/\s*"\s*(?=\s|$)/g, "");
 }
+
+function getTitle(c) {
+  const raw = cleanQuotes(c.titles ?? "");
+  return raw.split(";")[0].trim() || "Konzert";
+}
+
+function getDetails(c) {
+  // 1️⃣  Primär das Feld “programm” verwenden
+  const src = (c.programm && c.programm.trim())
+      ? c.programm
+      : (c.titles ?? "");
+
+  // 2️⃣  Anführungszeichen säubern und Semikolons ersetzen
+  return cleanQuotes(src)
+      .split(";")
+      .map(s => s.trim())
+      .join(" - ");
+}
+
+
 function getDate(c) {
   return (c.date ?? "").split(" ")[0];
 }
