@@ -148,14 +148,36 @@ function renderQuestion(i) {
         <div class="w-full flex flex-wrap justify-center gap-6 mb-16 mt-8">
           ${q.options.map((opt, idx) => {
             const selected = answers[q.id] === opt.value;
-            return `
+            // If selected, render a black "shadow" div behind the button
+            return selected ? `
+              <span class="relative inline-block" style="width: 150px; min-height: 108px;">
+                <span class="absolute top-1 left-1 w-full h-full bg-black" style="width: 150px; min-height: 108px; border-radius:0; z-index:0;"></span>
+                <button
+                  class="
+                    border px-4 py-8 flex items-center justify-center
+                    font-bold font-head text-[14px] text-center transition cursor-pointer
+                  "
+                  style="
+                    position: relative;
+                    width: 150px; min-height: 108px;
+                    background: ${bgColor};
+                    color: #000;
+                    border-color: ${optionBorder};
+                    border-radius: 0;
+                    z-index:1;
+                  "
+                  onclick="selectAnswer('${q.id}','${opt.value}',${i})"
+                >
+                  ${opt.label[LANG]}
+                </button>
+              </span>
+            ` : `
               <button
                 class="
                   border px-4 py-8 flex items-center justify-center
                   font-bold font-head text-[14px] text-center transition cursor-pointer
                   hover:shadow-lg hover:-translate-y-1 active:translate-y-0.5
                   focus:outline-none focus:ring-2 focus:ring-[#FEE843]
-                  ${selected ? 'ring-4 ring-[#FEE843]' : ''}
                 "
                 style="
                   width: 150px; min-height: 108px;
@@ -163,7 +185,6 @@ function renderQuestion(i) {
                   color: ${optionText};
                   border-color: ${optionBorder};
                   border-radius: 0;
-                  box-shadow: ${selected ? '0 0 0 3px #FEE843' : 'none'};
                 "
                 onclick="selectAnswer('${q.id}','${opt.value}',${i})"
               >
