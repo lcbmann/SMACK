@@ -1,5 +1,5 @@
 
-export const DEFAULT_CONCERT_LINK = "https://dein-ticketportal.example/";
+export const DEFAULT_CONCERT_LINK = "https://www.mphil.de/konzerte-und-karten/kalender-2024-2025#j44933";
 
 
 const concerts = [
