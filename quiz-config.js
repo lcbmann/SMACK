@@ -25,7 +25,8 @@ export const TRANSLATIONS = {
     energizing:      "Energizing",
     calm:            "Calm",
     tradition:       "Tradition",
-    discovery:       "Discovery"
+    discovery:       "Discovery",
+    whichConcertType: "Which concert type suits you best?",
   },
   de: {
     discover:        "Entdecken",
@@ -43,7 +44,8 @@ export const TRANSLATIONS = {
     energizing:      "Belebend",
     calm:            "Ruhig",
     tradition:       "Tradition",
-    discovery:       "Entdeckung"
+    discovery:       "Entdeckung",
+    whichConcertType: "Welches Konzerterlebnis passt am besten zu Ihnen?",
   }
 };
 

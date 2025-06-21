@@ -36,10 +36,48 @@ function renderIntro() {
   const saved = getSavedResult();
 
   quizContainer.innerHTML = /*html*/`
-    <section class="relative max-w-2xl mx-auto bg-white/90 rounded-3xl shadow-2xl px-8 py-12 flex flex-col items-center animate-fadein">
-      <div class="absolute -top-6 left-1/2 -translate-x-1/2 w-24 h-2 bg-[var(--mphil-yellow)] rounded-full shadow-lg"></div>
-      
-      <!-- language toggle -->
+    <section class="relative w-full min-h-screen flex flex-col items-center justify-center overflow-hidden">
+      <!-- Fullscreen background image and overlay -->
+      <img src="assets/concert2.jpg" class="fixed inset-0 w-full h-full object-cover z-0" alt="" />
+      <div class="fixed inset-0 bg-black/60 z-0"></div>
+
+      <!-- Top right purple shape image (flush with top right) -->
+      <img src="assets/shapes/shapes1.png"
+           class="absolute top-0 right-0 z-10 pointer-events-none object-contain"
+           style="width:120px; height:auto; max-width:40vw;" alt="" />
+
+      <!-- Bottom left pink shape image (flush with bottom left, smaller) -->
+      <img src="assets/shapes/shapes2.png"
+           class="absolute bottom-0 left-0 z-10 pointer-events-none object-contain"
+           style="width:70px; height:auto; max-width:22vw;" alt="" />
+
+      <!-- Yellow "M" SVG (top left, keep as SVG for sharpness) -->
+      <div class="absolute" style="left:24px; top:39px; z-index:11;">
+        <svg width="34" height="85" viewBox="0 0 34 85" fill="none">
+          <path d="M22.2313 6.22368H11.7687V0H0V85H11.7687V74.939H22.2313V78.7995H34V0.987322H22.2313V6.22368Z" fill="#FEE843"/>
+        </svg>
+      </div>
+
+      <!-- Main content -->
+      <div class="relative z-20 flex flex-col items-center justify-center w-full">
+        <div class="text-white text-center font-head text-3xl sm:text-5xl md:text-4xl lg:text-5xl mb-8 drop-shadow-lg tracking-tight uppercase" style="letter-spacing:.12em;">
+          ${t("whichConcertType")}
+        </div>
+        <p class="text-lg text-gray-200 mb-10 max-w-md mx-auto font-body text-center">
+          ${t("intro")}
+        </p>
+        <div class="flex flex-col gap-4 w-full max-w-xs mx-auto">
+          ${
+            saved ? `
+            <button class="btn btn-primary" onclick="viewSavedResult()">${t("viewResult")}</button>
+            <button class="btn btn-secondary" onclick="clearSavedResultAndRetake()">${t("retakeQuiz")}</button>
+            ` : `
+            <button class="btn btn-primary" onclick="startQuiz()">${t("takeQuiz")}  →</button>
+            `
+          }
+        </div>
+      </div>
+      <!-- Language selector -->
       <div class="absolute top-4 right-4 z-50">
         <div class="relative inline-block">
           <button id="lang-toggle-btn" class="btn btn-secondary btn-xs px-2 py-1 rounded-full flex items-center" style="font-size:1.1rem;" type="button">
@@ -51,21 +89,8 @@ function renderIntro() {
           </div>
         </div>
       </div>
-      
-      <img src="assets/concert.jpg" alt="Orchestra" class="rounded-xl shadow-lg mb-10 w-full h-56 object-cover"/>
-      <h2 class="text-6xl font-head mb-6 tracking-tight">${t("discover")}</h2>
-      <p class="text-lg text-gray-700 mb-10 max-w-xl mx-auto font-body">
-        ${t("intro")}
-      </p>
-      ${
-        saved ? `
-        <div class="flex flex-col gap-4 w-full max-w-xs">
-          <button class="btn btn-primary" onclick="viewSavedResult()">${t("viewResult")}</button>
-          <button class="btn btn-secondary" onclick="clearSavedResultAndRetake()">${t("retakeQuiz")}</button>
-        </div>` : `
-        <button class="btn btn-primary" onclick="startQuiz()">${t("takeQuiz")}</button>`
-      }
-    </section>`;
+    </section>
+  `;
 }
 
 function startQuiz() { renderQuestion(0); }
@@ -129,6 +154,23 @@ function renderByType(q) {
     return `<textarea id="text-q-${q.id}" rows="4" placeholder="${q.placeholder?.[LANG] || ''}"
               class="w-full bg-gray-50 border-2 border-gray-300 p-4 focus:border-[var(--mphil-yellow)]"
               oninput="handleTextInput('${q.id}', this)">${answers[q.id] || ''}</textarea>`;
+  }
+
+  if (q.type === "image") {
+    return `<div class="grid sm:grid-cols-2 gap-6">
+      ${q.options.map(opt => {
+        const selected = answers[q.id] === opt.value;
+        return `
+          <div class="group cursor-pointer relative"
+               onclick="selectAnswer('${q.id}','${opt.value}',${currentIndex})">
+            <img src="${opt.img}" alt="${opt.label[LANG]}"
+                 class="img-card w-full h-48 object-cover border-4 ${selected ? 'border-[var(--mphil-yellow)]' : 'border-transparent'}">
+            <span class="absolute inset-x-0 bottom-0 bg-black/70 text-white text-xs py-1 text-center">
+              ${opt.label[LANG]}
+            </span>
+          </div>`;
+      }).join("")}
+    </div>`;
   }
 
   return "<p>Unsupported question type</p>";
@@ -340,21 +382,43 @@ function renderShareCardHTML(arch, scores, recs, subtype = "", description = "",
     </div>`;
 }
 
-function renderMetricsForImage(scores, color) {
-  const palette = ["#F6DF00","#7DD3FC","#F9A8D4","#6EE7B7"];
-  const min = Math.min(...Object.values(scores),0);
-  const max = Math.max(...Object.values(scores),1);
-  return DIMENSIONS.map((m,i)=>{
+function renderMetricsForImage(scores) {
+  const axisLabels = {
+    energy:    { left: t("calm"), right: t("energizing") },
+    tradition: { left: t("discovery"), right: t("tradition") }
+  };
+  const maxAbs = Math.max(2, ...Object.values(scores).map(Math.abs));
+  return DIMENSIONS.map((m) => {
     const val = scores[m];
-    const width = max===min?100:Math.max(10,((val-min)/(max-min))*100);
-    const label = m.charAt(0).toUpperCase()+m.slice(1);
-    return `<div style="display:flex;align-items:center;gap:18px;margin-bottom:18px;">
-        <span style="width:180px;text-align:left;font-family:'Maison Neue';font-size:22px;">${label}</span>
-        <div style="flex:1;height:32px;border-radius:16px;background:#eee;overflow:hidden;">
-          <div style="width:${width}%;height:32px;border-radius:16px;background:${palette[i%palette.length]};"></div>
+    const leftLabel = axisLabels[m]?.left || "Left";
+    const rightLabel = axisLabels[m]?.right || "Right";
+    const norm = Math.max(-1, Math.min(1, val / maxAbs));
+    const dotPos = 50 + norm * 50;
+    return `
+      <div style="margin-bottom:32px;">
+        <div style="display:flex;justify-content:space-between;font-family:'Maison Neue',sans-serif;font-size:22px;color:#666;margin-bottom:6px;">
+          <span>${leftLabel}</span>
+          <span>${rightLabel}</span>
         </div>
-        <span style="width:48px;text-align:right;font-family:monospace;font-size:22px;color:#666;">${val}</span>
-      </div>`;
+        <div style="position:relative;height:32px;border-radius:16px;overflow:hidden;background:linear-gradient(90deg,#7DD3FC 0%,#F6DF00 100%);">
+          <div style="
+            position:absolute;
+            top:50%; left:${dotPos}%;
+            transform:translate(-50%,-50%);
+            width:32px;height:32px;
+            background:#fff;
+            border:6px solid #222;
+            border-radius:50%;
+            box-shadow:0 2px 12px rgba(0,0,0,0.10);
+            z-index:2;
+            transition:left 0.3s;
+          "></div>
+        </div>
+        <div style="text-align:center;font-family:monospace;font-size:20px;color:#444;margin-top:6px;">
+          ${Math.abs(val)} ${val === 0 ? "" : (val > 0 ? rightLabel : leftLabel)}
+        </div>
+      </div>
+    `;
   }).join("");
 }
 

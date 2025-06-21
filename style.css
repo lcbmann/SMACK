@@ -82,8 +82,10 @@ body{
 ------------------------------------------------------------------ */
 .btn{
   display:inline-block;
-  padding:.9rem 2.5rem;
-  border-radius:0;             /* sharp corners to match brand site */
+  padding:.6rem 1.5rem;           /* smaller padding */
+  border-radius:0;
+  font-family:"Maison Neue",ui-sans-serif,sans-serif; /* use Maison Neue */
+  font-size:1rem;                 /* smaller font size */
   font-weight:600;
   text-transform:uppercase;
   letter-spacing:.08em;
