@@ -13,6 +13,7 @@ import {
   TRANSLATIONS,
   LANG, setLang
 } from './quiz-config.js';
+import { getConcertsForResult } from "./concert-filters.js";
 
 /* ────────────────────────────────────────────────────────────
    1.  STATE
@@ -317,7 +318,7 @@ function renderResults() {
   const archetype = computeArchetype();
   const subtypeKey = answers.q3;
   const subtype   = SUBTYPE_LABEL[subtypeKey] ? SUBTYPE_LABEL[subtypeKey][LANG] + " " : "";
-  const recs      = CONCERTS[archetype.id] || [];
+  const recs = getConcertsForResult(archetype.id);
   const description = SUBTYPE_ARCHETYPE_DESCRIPTIONS[subtypeKey]?.[archetype.id]?.[LANG] || archetype.blurb[LANG];
   const color = ARCHETYPE_COLORS[archetype.id]?.[subtypeKey] || ARCHETYPE_COLORS[archetype.id]?.base || "#ccc";
 
@@ -335,14 +336,31 @@ function renderResults() {
 
       <h3 class="text-2xl font-head mb-4">${t("concertPicks")}</h3>
       <ul class="space-y-3 mb-12">
-        ${recs.length ? recs.map(c => `
-          <li class="border p-4 rounded-xl text-left">
-            <span class="block font-semibold">${c.title}</span>
-            <span class="text-sm text-gray-500">${c.date} – ${c.venue}</span>
-            <a href="${c.link}" target="_blank" rel="noopener"
-               class="text-[var(--mphil-yellow)] underline text-sm mt-1 block">View details</a>
-          </li>`).join("") : `<li>${t("noMatches")}</li>`}
+        ${
+            recs
+                
+                .filter(c => new Date(c.date) >= new Date())
+                
+                .sort((a, b) =>
+                    new Date(`${a.date}T${(a.start ?? "00:00").slice(0,5)}`) -
+                    new Date(`${b.date}T${(b.start ?? "00:00").slice(0,5)}`)
+                )
+                .slice(0, 5)
+                .map(c => `
+              <li class="border p-4 rounded-xl text-left">
+                <span class="block font-semibold">${getTitle(c)}</span>
+                <span class="text-sm text-gray-500">
+                  ${getDate(c)}${getTime(c) ? " " + getTime(c) : ""} – ${c.venue}
+                </span>
+                <a href="${c.link}" target="_blank" rel="noopener"
+                   class="text-[var(--mphil-yellow)] underline text-sm mt-1 block">
+                   View details
+                </a>
+              </li>`
+                ).join("") || `<li style="font-size:28px;color:#888;">${t("noMatches")}</li>`
+        }
       </ul>
+
 
       <button class="btn btn-primary btn-sm mb-3" onclick="shareResultImage()">${t("shareImage")}</button>
       <button class="btn btn-primary btn-sm mb-3" onclick="window.open('https://www.mphil.de/abonnement/infomaterial-bestellen/newsletter','_blank')">
@@ -357,6 +375,18 @@ function renderResults() {
 /* ────────────────────────────────────────────────────────────
    5.  VISUAL HELPERS
    ────────────────────────────────────────────────────────────*/
+
+
+function getTitle(c) {
+  return (c.titles ?? "").split(";")[0].trim() || "Konzert";
+}
+function getDate(c) {
+  return (c.date ?? "").split(" ")[0];
+}
+function getTime(c) {
+  return (c.start ?? "").slice(0, 5);
+}
+
 function renderMetricBars(scores) {
   const axisLabels = {
     energy:    { left: t("calm"), right: t("energizing") },

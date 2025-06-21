@@ -1,3 +1,7 @@
+
+export const DEFAULT_CONCERT_LINK = "https://dein-ticketportal.example/";
+
+
 const concerts = [
   {
     date: "2025-06-06 00:00:00",
@@ -1900,3 +1904,5 @@ const concerts = [
     link: DEFAULT_CONCERT_LINK
   },
 ];
+
+export { concerts as CONCERTS };

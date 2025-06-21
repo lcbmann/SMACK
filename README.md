@@ -16,12 +16,11 @@ This is a mobile-friendly quiz web app that helps users discover their concert p
 * HTML, CSS, JavaScript
 * Tailwind CSS
 * Font Awesome
-* html2canvas for image export
 
 ## How to Use
 
 1. Clone the repository
-2. Open `index.html` in a browser
+2. Open `index.html` in a browser (must load with live server)
 3. Take the quiz and view your result
 4. Use the language toggle to switch between English and German
 
@@ -35,4 +34,4 @@ This is a mobile-friendly quiz web app that helps users discover their concert p
 
 ## Credits
 
-Design by the MPhil team. Built with JavaScript and Tailwind CSS.
+Design by the SMACK team. Built with JavaScript and Tailwind CSS for TUM Science Hackathon 2025.
