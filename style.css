@@ -70,7 +70,7 @@ body{
 .font-head{
   font-family:"Maison Neue",ui-sans-serif,sans-serif;
   text-transform:uppercase;
-  letter-spacing:.12em;        /* roughly Tailwind's tracking-widest */
+  letter-spacing:normal;        /* roughly Tailwind's tracking-widest */
   font-weight:700;
 }
 .font-body{
@@ -81,9 +81,11 @@ body{
    4.  BUTTONS
 ------------------------------------------------------------------ */
 .btn{
-  display:inline-block;
-  padding:.6rem 1.5rem;           /* smaller padding */
+  display:inline-flex;
+  padding:10px;           /* smaller padding */
   border-radius:0;
+  justify-content: center;
+  gap: 10px;
   font-family:"Maison Neue",ui-sans-serif,sans-serif; /* use Maison Neue */
   font-size:1rem;                 /* smaller font size */
   font-weight:600;

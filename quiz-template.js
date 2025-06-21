@@ -65,9 +65,7 @@ function renderIntro() {
         <div class="text-white text-center font-head text-2xl sm:text-3xl md:text-3xl lg:text-4xl mb-6 drop-shadow-lg tracking-tight uppercase mx-auto max-w-sm" style="letter-spacing:.12em;">
           ${t("whichConcertType")}
         </div>
-        <p class="text-base text-gray-200 mb-8 max-w-xs mx-auto font-body text-center">
-          ${t("introShort") /* Use a shortened description key */}
-        </p>
+
         <div class="flex flex-col gap-4 w-full max-w-xs mx-auto">
           ${
             saved ? `
@@ -174,12 +172,9 @@ function renderQuestion(i) {
                     transition: box-shadow 0.2s, transform 0.2s;
                   "
                 >
-                  <div class="flex-shrink-0 w-10 h-10 bg-white border border-black flex items-center justify-center rounded-none overflow-hidden">
-                    <img src="${opt.img}" alt="${opt.label[LANG]}" class="object-cover w-10 h-10" />
-                  </div>
                   <button
                     type="button"
-                    class="ml-2 bg-black/70 text-white rounded-full p-2 flex items-center justify-center"
+                    class="ml-2 bg-transparent text-black rounded-full flex items-center justify-center"
                     onclick="event.stopPropagation(); playAudioClip('${opt.audio}', this);"
                     title="${t('playAudio')}"
                     tabindex="-1"

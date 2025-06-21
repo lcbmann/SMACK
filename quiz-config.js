@@ -18,7 +18,7 @@ export const TRANSLATIONS = {
     shareImage:      "Share as Image",
     newsletter:      "Sign up for the Newsletter",
     backToStart:     "Back to Start",
-    question:        (i, total) => `Question ${i}/${total}`,
+    question:        (i, total) => `Question ${i} of ${total}`,
     concertPicks:    "Concert Picks",
     yourProfile:     "Your Profile",
     noMatches:       "No matches yet – stay tuned!",
@@ -29,7 +29,7 @@ export const TRANSLATIONS = {
     whichConcertType: "Which concert type are you?",
     previous:        "Previous",
     next:            "Next",
-    introShort:      "Discover your perfect concert vibe with personalised tips from the Münchner Philharmoniker.",
+    introShort:      "Discover your perfect concert match.",
     playAudio:       "Play audio",
     pauseAudio:      "Pause audio"
   },
@@ -174,18 +174,18 @@ export const QUESTIONS = [
     id: "q3",
     type: "choice",
     text: {
-      en: "Who are you most likely to go to a concert with?",
-      de: "Mit wem gehen Sie am ehesten ins Konzert?"
+      en: "With whom do you want to go?",
+      de: "Mit wem willst du hingehen?"
     },
     shapeImg: "assets/shapes/shapes5.png",
     shapePos: "bottom-right",
     nextBg: COLORS.purple,
     nextText: COLORS.black,
     options: [
-      { value: "romantic",    label: { en: "A date",   de: "Ein Date"    }, icon: "fas fa-heart"        },
-      { value: "connected",   label: { en: "Family",   de: "Familie"     }, icon: "fas fa-users"        },
-      { value: "social",      label: { en: "Friends",  de: "Freunde"     }, icon: "fas fa-glass-cheers" },
-      { value: "independent", label: { en: "Alone",    de: "Allein"      }, icon: "fas fa-user"         }
+      { value: "romantic",    label: { en: "A date",   de: "Einem Date"    }, icon: "fas fa-heart"        },
+      { value: "connected",   label: { en: "With younger kids",   de: "Mit jüngeren Kindern"     }, icon: "fas fa-users"        },
+      { value: "social",      label: { en: "My friends",  de: "Meinen Freunden"     }, icon: "fas fa-glass-cheers" },
+      { value: "independent", label: { en: "I want to spend some time alone",    de: "Ich will Zeit alleine verbringen"      }, icon: "fas fa-user"         }
     ]
   },
   // 4. Orange bg, purple answers, black text
