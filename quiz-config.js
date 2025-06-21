@@ -138,8 +138,8 @@ export const QUESTIONS = [
         value: "energizing",
         label: { en: "Upbeat & Energized",  de: "Lebhaft & Energetisch" },
         description: {
-          en: "Energetic, full of drive",
-          de: "Energiegeladen, voller Schwung"
+          en: "",
+          de: ""
         },
         icon: "fas fa-bolt",
         effects: { energy: +2 }
@@ -148,8 +148,8 @@ export const QUESTIONS = [
         value: "reflective",
         label: { en: "Calm & Reflective", de: "Ruhig & Kontemplativ" },
         description: {
-          en: "Mellow, emotionally deep",
-          de: "Gelassen, emotional tief"
+          en: "",
+          de: ""
         },
         icon: "fas fa-leaf",
         effects: { energy: -2 }
@@ -165,8 +165,9 @@ export const QUESTIONS = [
       en: "What's your energy level before a concert?",
       de: "Wie hoch ist Ihr Energielevel vor einem Konzert?"
     },
+    // The rendering code should default this to 3 and always enable "Next"
     effects: value => ({
-      energy: value - 3.5
+      energy: value - 3  // 1 → -2, 3 → 0, 6 → +3
     })
   },
 
@@ -175,38 +176,18 @@ export const QUESTIONS = [
     id: "q3",
     type: "choice",
     text: {
-      en: "Who are you most likely to go to a concert with?",
-      de: "Mit wem gehen Sie am ehesten ins Konzert?"
+      en: "With whom do you want to go?",
+      de: "Mit wem willst du hingehen?"
     },
     shapeImg: "assets/shapes/shapes5.png",
     shapePos: "bottom-right",
     nextBg: COLORS.purple,
     nextText: COLORS.black,
     options: [
-      {
-        value: "romantic",
-        label: { en: "A date", de: "Ein Date" },
-        icon: "fas fa-heart",
-        effects: { tradition: +1 }
-      },
-      {
-        value: "connected",
-        label: { en: "With family", de: "Familie" },
-        icon: "fas fa-users",
-        effects: { tradition: +1 }
-      },
-      {
-        value: "social",
-        label: { en: "Friends", de: "Freunde" },
-        icon: "fas fa-glass-cheers",
-        effects: { tradition: -1 }
-      },
-      {
-        value: "independent",
-        label: { en: "I'd like to spend some time alone", de: "Allein" },
-        icon: "fas fa-user",
-        effects: { tradition: -1 }
-      }
+      { value: "romantic",    label: { en: "A date",   de: "Einem Date"    }, icon: "fas fa-heart"        },
+      { value: "connected",   label: { en: "With younger kids",   de: "Mit jüngeren Kindern"     }, icon: "fas fa-users"        },
+      { value: "social",      label: { en: "My friends",  de: "Meinen Freunden"     }, icon: "fas fa-glass-cheers" },
+      { value: "independent", label: { en: "I want to spend some time alone",    de: "Ich will Zeit alleine verbringen"      }, icon: "fas fa-user"         }
     ]
   },
 
@@ -232,7 +213,7 @@ export const QUESTIONS = [
         },
         img: "assets/answers/boneym.png",
         audio: "audio/boneym.mp3",
-        effects: { energy: +1, tradition: +1 }
+        effects: { energy: +2, tradition: +2 }
       },
       {
         value: "cro",
@@ -243,7 +224,7 @@ export const QUESTIONS = [
         },
         img: "assets/answers/cro.png",
         audio: "audio/cro.mp3",
-        effects: { energy: +1, tradition: -1 }
+        effects: { energy: +2, tradition: -2 }
       },
       {
         value: "lana",
@@ -254,7 +235,7 @@ export const QUESTIONS = [
         },
         img: "assets/answers/lana.png",
         audio: "audio/lana.mp3",
-        effects: { energy: -1, tradition: -1 }
+        effects: { energy: -2, tradition: -2 }
       },
       {
         value: "adele",
@@ -265,12 +246,12 @@ export const QUESTIONS = [
         },
         img: "assets/answers/adele.png",
         audio: "audio/adele.mp3",
-        effects: { energy: -1, tradition: +1 }
+        effects: { energy: -2, tradition: +2 }
       }
     ]
   },
 
-  // 5. Time of day preference (no effect on scoring)
+  // 5. Time of day preference
   {
     id: "q5",
     type: "choice",
@@ -284,14 +265,12 @@ export const QUESTIONS = [
       {
         value: "nightowl",
         label: { en: "Night owl", de: "Nachteule" },
-        img: "assets/nightowl.png",
-        effects: { earlybird: false }
+        icon: "fa-solid fa-moon"
       },
       {
         value: "earlybird",
         label: { en: "Early bird", de: "Frühaufsteher" },
-        img: "assets/earlybird.png",
-        effects: { earlybird: true }
+        icon: "fa-solid fa-dove"
       }
     ]
   },
@@ -311,25 +290,21 @@ export const QUESTIONS = [
     options: [
       {
         value: "connoisseur",
-        label: { en: "The connoisseur", de: "Der Kenner" },
         img: "assets/answers/connoisseurperson.png",
         effects: { energy: +2, tradition: +2 }
       },
       {
         value: "pioneer",
-        label: { en: "The pioneer", de: "Der Pionier" },
         img: "assets/answers/pioneerperson.png",
         effects: { energy: +2, tradition: -2 }
       },
       {
         value: "purist",
-        label: { en: "The purist", de: "Der Purist" },
         img: "assets/answers/puristperson.png",
         effects: { energy: -2, tradition: +2 }
       },
       {
         value: "bohemian",
-        label: { en: "The bohemian", de: "Der Bohemian" },
         img: "assets/answers/bohemianperson.png",
         effects: { energy: -2, tradition: -2 }
       }
@@ -349,31 +324,27 @@ export const QUESTIONS = [
     nextBg: COLORS.green,
     nextText: COLORS.black,
     options: [
-  {
-    value: "connoisseur",
-    label: { en: "Connoisseur’s painting", de: "Bild des Kenners" },
-    img: "assets/answers/connoisseurpainting.png",
-    effects: { energy: +2, tradition: +2 }
-  },
-  {
-    value: "pioneer",
-    label: { en: "Pioneer’s painting", de: "Bild des Pioniers" },
-    img: "assets/answers/pioneerpainting.png",
-    effects: { energy: +2, tradition: -2 }
-  },
-  {
-    value: "purist",
-    label: { en: "Purist’s painting", de: "Bild des Puristen" },
-    img: "assets/answers/puristpainting.png",
-    effects: { energy: -2, tradition: +2 }
-  },
-  {
-    value: "bohemian",
-    label: { en: "Bohemian’s painting", de: "Bild des Bohemiens" },
-    img: "assets/answers/bohemianpainting.png",
-    effects: { energy: -2, tradition: -2 }
-  }
-] 
+      {
+        value: "connoisseur",
+        img: "assets/answers/connoisseurpainting.png",
+        effects: { energy: +2, tradition: +2 }
+      },
+      {
+        value: "pioneer",
+        img: "assets/answers/pioneerpainting.png",
+        effects: { energy: +2, tradition: -2 }
+      },
+      {
+        value: "purist",
+        img: "assets/answers/puristpainting.png",
+        effects: { energy: -2, tradition: +2 }
+      },
+      {
+        value: "bohemian",
+        img: "assets/answers/bohemianpainting.png",
+        effects: { energy: -2, tradition: -2 }
+      }
+    ]
   }
 ];
 
@@ -528,12 +499,3 @@ export const ARCHETYPE_COLORS = {
     independent: "#065f46"
   }
 };
-
-export function getIsEarlyBird(answers) {
-  // Returns true for early bird, false for night owl, or undefined if not answered
-  const q = QUESTIONS.find(q => q.id === "q5");
-  if (!q) return undefined;
-  const val = answers?.q5;
-  const opt = q.options.find(o => o.value === val);
-  return opt?.effects?.earlybird;
-}

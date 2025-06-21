@@ -80,7 +80,7 @@ function renderIntro() {
       <!-- Language selector -->
       <div class="absolute top-4 right-4 z-50">
         <div class="relative inline-block">
-          <button id="lang-toggle-btn" class="btn btn-secondary btn-xs px-2 py-1 rounded-full flex items-center" style="font-size:1.1rem;" type="button">
+          <button id="lang-toggle-btn" class="btn btn-ghost btn-xs px-2 py-1 rounded-full flex items-center" style="font-size:1.1rem;" type="button">
             <i class="fas fa-globe"></i>
           </button>
           <div id="lang-dropdown" class="hidden absolute right-0 mt-1 bg-white border rounded shadow-lg text-sm">
