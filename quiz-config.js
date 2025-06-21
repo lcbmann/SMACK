@@ -278,22 +278,6 @@ export const ARCHETYPES = [
   }
 ];
 
-export const DEFAULT_CONCERT_LINK = "https://www.mphil.de/en/concerts-tickets/calendar/concerts/debussy-francaix-ravel-2025-06-22-4598";
-
-export const CONCERTS = {
-  connoisseur: [
-    { date: "2025-10-12", title: "Beethoven 5 & Dvořák 9", venue: "Philharmonie", link: DEFAULT_CONCERT_LINK }
-  ],
-  pioneer: [
-    { date: "2025-11-04", title: "John Adams • Harmonielehre", venue: "Gasteig HP8", link: DEFAULT_CONCERT_LINK }
-  ],
-  purist: [
-    { date: "2025-12-08", title: "Bach • Christmas Oratorio I-III", venue: "Herkulessaal", link: DEFAULT_CONCERT_LINK }
-  ],
-  wanderer: [
-    { date: "2026-01-20", title: "Arvo Pärt • Tabula Rasa & Glass", venue: "Isarphilharmonie", link: DEFAULT_CONCERT_LINK }
-  ]
-};
 
 export const SUBTYPE_LABEL = {
   romantic:    { en: "Romantic",    de: "Romantisch" },

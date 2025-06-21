@@ -6,13 +6,13 @@ import {
   DIMENSIONS,
   QUESTIONS,
   ARCHETYPES,
-  CONCERTS,
   SUBTYPE_LABEL,
   SUBTYPE_ARCHETYPE_DESCRIPTIONS,
   ARCHETYPE_COLORS,
   TRANSLATIONS,
   LANG, setLang
 } from './quiz-config.js';
+
 import { getConcertsForResult } from "./concert-filters.js";
 
 /* ────────────────────────────────────────────────────────────
@@ -318,9 +318,11 @@ function renderResults() {
   const archetype = computeArchetype();
   const subtypeKey = answers.q3;
   const subtype   = SUBTYPE_LABEL[subtypeKey] ? SUBTYPE_LABEL[subtypeKey][LANG] + " " : "";
-  const recs = getConcertsForResult(archetype.id);
   const description = SUBTYPE_ARCHETYPE_DESCRIPTIONS[subtypeKey]?.[archetype.id]?.[LANG] || archetype.blurb[LANG];
   const color = ARCHETYPE_COLORS[archetype.id]?.[subtypeKey] || ARCHETYPE_COLORS[archetype.id]?.base || "#ccc";
+
+  // Get concerts for this archetype using the new filter logic
+  const recs = getConcertsForResult(archetype.id);
 
   /* persist */
   saveResult({ archetypeId: archetype.id, recs, answers });
@@ -338,9 +340,7 @@ function renderResults() {
       <ul class="space-y-3 mb-12">
         ${
             recs
-                
                 .filter(c => new Date(c.date) >= new Date())
-                
                 .sort((a, b) =>
                     new Date(`${a.date}T${(a.start ?? "00:00").slice(0,5)}`) -
                     new Date(`${b.date}T${(b.start ?? "00:00").slice(0,5)}`)
@@ -360,7 +360,6 @@ function renderResults() {
                 ).join("") || `<li style="font-size:28px;color:#888;">${t("noMatches")}</li>`
         }
       </ul>
-
 
       <button class="btn btn-primary btn-sm mb-3" onclick="shareResultImage()">${t("shareImage")}</button>
       <button class="btn btn-primary btn-sm mb-3" onclick="window.open('https://www.mphil.de/abonnement/infomaterial-bestellen/newsletter','_blank')">
