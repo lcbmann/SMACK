@@ -416,7 +416,7 @@ function renderQuestion(i) {
             ${q.text[LANG]}
           </h3>
         </div>
-        <div class="w-full flex flex-wrap justify-center gap-6 mb-16 mt-8">
+        <div class="quiz-answers-row w-full flex flex-wrap justify-center gap-6 mb-16 mt-8">
           ${q.options.map((opt, idx) => {
             const selected = isMulti
               ? Array.isArray(selectedAnswers) && selectedAnswers.includes(opt.value)
