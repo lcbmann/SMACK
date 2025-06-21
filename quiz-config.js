@@ -27,11 +27,11 @@ export const TRANSLATIONS = {
     tradition:       "Tradition",
     discovery:       "Discovery",
     whichConcertType: "Which concert type are you?",
-    previous:       "Previous",
-    next:           "Next",
-    introShort: "Discover your perfect concert vibe with personalised tips from the Münchner Philharmoniker.",
-    playAudio:      "Play audio",
-    pauseAudio:     "Pause audio"
+    previous:        "Previous",
+    next:            "Next",
+    introShort:      "Discover your perfect concert vibe with personalised tips from the Münchner Philharmoniker.",
+    playAudio:       "Play audio",
+    pauseAudio:      "Pause audio"
   },
   de: {
     discover:        "Entdecken",
@@ -51,11 +51,11 @@ export const TRANSLATIONS = {
     tradition:       "Tradition",
     discovery:       "Entdeckung",
     whichConcertType: "Welcher Konzerttyp sind Sie?",
-    previous:       "Zurück",
-    next:           "Weiter",
-    introShort: "Entdecken Sie Ihre perfekte Konzertstimmung mit persönlichen Tipps der Münchner Philharmoniker.",
-    playAudio:      "Audio abspielen",
-    pauseAudio:     "Audio pausieren"
+    previous:        "Zurück",
+    next:            "Weiter",
+    introShort:      "Entdecken Sie Ihre perfekte Konzertstimmung mit persönlichen Tipps der Münchner Philharmoniker.",
+    playAudio:       "Audio abspielen",
+    pauseAudio:      "Audio pausieren"
   }
 };
 

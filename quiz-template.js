@@ -239,25 +239,27 @@ function renderQuestion(i) {
             const selected = isMulti
               ? Array.isArray(selectedAnswers) && selectedAnswers.includes(opt.value)
               : selectedAnswers === opt.value;
-            // If selected, render a black "shadow" div behind the button
             const description = opt.description?.[LANG] ? `<div class="text-xs text-gray-600 mt-2">${opt.description[LANG]}</div>` : "";
+            // Use a fixed height for all answer buttons and their containers
+            const btnWidth = 150;
+            const btnHeight = 108;
             return selected ? `
-              <span class="relative inline-block" style="width: 150px; min-height: 108px;">
-                <span class="absolute top-1 left-1 w-full h-full bg-black" style="width: 150px; min-height: 108px; border-radius:0; z-index:0;"></span>
+              <span class="relative inline-block" style="width: ${btnWidth}px; height: ${btnHeight}px;">
+                <span class="absolute top-1 left-1 w-full h-full bg-black" style="width: ${btnWidth}px; height: ${btnHeight}px; border-radius:0; z-index:0;"></span>
                 <button
                   class="
-                    border px-4 py-8 flex flex-col items-center justify-center
+                    border flex flex-col items-center justify-center
                     font-bold font-head text-[14px] text-center transition cursor-pointer
                   "
                   style="
                     position: relative;
-                    width: 150px; min-height: 108px;
+                    width: ${btnWidth}px; height: ${btnHeight}px; min-height: ${btnHeight}px; max-height: ${btnHeight}px;
                     background: ${bgColor};
                     color: #000;
                     border-color: ${optionBorder};
                     border-radius: 0;
                     z-index:1;
-                    outline-offset: 2px;
+                    padding: 32px 16px;
                   "
                   onclick="selectAnswer('${q.id}','${opt.value}',${i},${isMulti})"
                 >
@@ -268,17 +270,18 @@ function renderQuestion(i) {
             ` : `
               <button
                 class="
-                  border px-4 py-8 flex flex-col items-center justify-center
+                  border flex flex-col items-center justify-center
                   font-bold font-head text-[14px] text-center transition cursor-pointer
                   hover:shadow-lg hover:-translate-y-1 active:translate-y-0.5
                   focus:outline-none focus:ring-2 focus:ring-[#FEE843]
                 "
                 style="
-                  width: 150px; min-height: 108px;
+                  width: ${btnWidth}px; height: ${btnHeight}px; min-height: ${btnHeight}px; max-height: ${btnHeight}px;
                   background: ${optionBg};
                   color: ${optionText};
                   border-color: ${optionBorder};
                   border-radius: 0;
+                  padding: 32px 16px;
                 "
                 onclick="selectAnswer('${q.id}','${opt.value}',${i},${isMulti})"
               >
@@ -425,6 +428,7 @@ function renderResults() {
   const subtype   = SUBTYPE_LABEL[subtypeKey] ? SUBTYPE_LABEL[subtypeKey][LANG] + " " : "";
   const description = SUBTYPE_ARCHETYPE_DESCRIPTIONS[subtypeKey]?.[archetype.id]?.[LANG] || archetype.blurb[LANG];
   const color = ARCHETYPE_COLORS[archetype.id]?.[subtypeKey] || ARCHETYPE_COLORS[archetype.id]?.base || "#ccc";
+  const archetypeImg = `assets/archetypes/${archetype.id}.png`;
 
   // Get concerts for this archetype using the new filter logic
   const recs = getConcertsForResult(archetype.id);
@@ -432,48 +436,133 @@ function renderResults() {
   /* persist */
   saveResult({ archetypeId: archetype.id, recs, answers });
 
-  /* UI */
+  // Always use shapes10.png (left) and shapes9.png (right)
+  const leftShapeObj = { src: "assets/shapes/shapes10.png", side: "left" };
+  const rightShapeObj = { src: "assets/shapes/shapes9.png", side: "right" };
+
+  // Pick two random vertical positions (in % of section height), with a minimum gap
+  function getTwoRandomPercents(min = 10, max = 80, minGap = 25) {
+    let first = Math.random() * (max - min) + min;
+    let second;
+    do {
+      second = Math.random() * (max - min) + min;
+    } while (Math.abs(first - second) < minGap);
+    return [first, second];
+  }
+  const [rightTop, leftTop] = getTwoRandomPercents();
+
+  // Helper for shape positioning (absolute to section, at random heights)
+  function renderResultShape(img, side, topPercent) {
+    let width = 200;
+    let style = `width:${width}px; height:auto; max-width:40vw; z-index:0; pointer-events:none; opacity:0.85; position:absolute; top:${topPercent}%; transform:translateY(-50%);`;
+    if (side === "left") style += "left:0;";
+    if (side === "right") style += "right:0;";
+    return `<img src="${img}" style="${style}" alt="" />`;
+  }
+
   quizContainer.innerHTML = /*html*/`
-    <div class="max-w-xl mx-auto text-center animate-fadein">
-      <h2 class="text-4xl font-head mb-6" style="color:${color}">${subtype}${archetype.title[LANG]}</h2>
-      <p class="text-lg text-gray-700 mb-8 font-body">${description}</p>
-
-      <h3 class="text-2xl font-head mb-4">${t("yourProfile")}</h3>
-      <div class="space-y-3 mb-10">${renderMetricBars(scores)}</div>
-
-      <h3 class="text-2xl font-head mb-4">${t("concertPicks")}</h3>
-      <ul class="space-y-3 mb-12">
-        ${
-            recs
+    <section class="relative w-full min-h-screen flex flex-col items-center justify-center bg-black overflow-hidden">
+      <!-- Logo in top left corner -->
+      <img src="assets/logo2.png" alt="Logo" class="absolute top-4 left-4 z-30 w-14 h-14 object-contain pointer-events-none" />
+      <!-- Two fixed shapes: shapes10.png left, shapes9.png right, at random vertical positions -->
+      ${renderResultShape(rightShapeObj.src, "right", rightTop)}
+      ${renderResultShape(leftShapeObj.src, "left", leftTop)}
+      <div class="relative z-10 flex flex-col items-center w-full">
+        <!-- Archetype image with rainbow gradient border -->
+        <div class="flex flex-col items-center mt-12 mb-6">
+          <div class="relative flex items-center justify-center" style="width:210px;height:314px;">
+            <div style="
+              position:absolute;
+              top:0;left:0;right:0;bottom:0;
+              padding:6px;
+              border-radius: 1.25rem;
+              background: conic-gradient(
+                #FEE843 0deg, #A49DCC 72deg, #8BC27D 144deg, #F7C3D9 216deg, #F6DF00 288deg, #FEE843 360deg
+              );
+              z-index:1;
+              width:210px;
+              height:314px;
+              ">
+              <div style="
+                width:198px;height:302px;
+                border-radius: 1rem;
+                overflow:hidden;
+                background:#fff;
+                margin:auto;
+                ">
+                <img src="${archetypeImg}" alt="${archetype.title[LANG]}"
+                  class="w-full h-full object-cover" />
+              </div>
+            </div>
+          </div>
+          <div class="mt-8 text-center text-white text-2xl font-normal font-body">
+            ${subtype}${archetype.title[LANG]}
+          </div>
+          <div class="mt-2 text-center text-white text-base font-bold font-head lowercase tracking-tight">
+            ${
+              Object.entries(scores)
+                .map(([k, v]) => {
+                  if (k === "energy") {
+                    if (v > 0) return `<span class="mr-2">${t("energizing")}</span>`;
+                    if (v < 0) return `<span class="mr-2">${t("calm")}</span>`;
+                  }
+                  if (k === "tradition") {
+                    if (v > 0) return `<span class="mr-2">${t("tradition")}</span>`;
+                    if (v < 0) return `<span class="mr-2">${t("discovery")}</span>`;
+                  }
+                  return "";
+                })
+                .filter(Boolean)
+                .join(" · ")
+            }
+          </div>
+        </div>
+        <div class="w-80 mx-auto text-white text-sm mb-8" style="font-family:'Maison Neue',sans-serif;">
+          ${description}
+        </div>
+        <div class="w-full flex justify-center">
+          <div class="w-56 h-16 mx-auto text-white text-2xl font-normal font-body mb-4 text-center">${t("concertPicks")}</div>
+        </div>
+        <div class="flex flex-wrap gap-8 items-stretch justify-center w-full max-w-4xl mb-8">
+          ${
+            (() => {
+              const colorList = [
+                "#FEE843", // yellow
+                "#A49DCC", // purple
+                "#8BC27D", // green
+                "#F6DF00", // orange (use yellow as orange, or add your own)
+                "#F7C3D9"  // pink
+              ];
+              return recs
                 .filter(c => new Date(c.date) >= new Date())
                 .sort((a, b) =>
-                    new Date(`${a.date}T${(a.start ?? "00:00").slice(0,5)}`) -
-                    new Date(`${b.date}T${(b.start ?? "00:00").slice(0,5)}`)
+                  new Date(`${a.date}T${(a.start ?? "00:00").slice(0,5)}`) -
+                  new Date(`${b.date}T${(b.start ?? "00:00").slice(0,5)}`)
                 )
                 .slice(0, 5)
-                .map(c => `
-              <li class="border p-4 rounded-xl text-left">
-                <span class="block font-semibold">${getTitle(c)}</span>
-                <span class="text-sm text-gray-500">
-                  ${getDate(c)}${getTime(c) ? " " + getTime(c) : ""} – ${c.venue}
-                </span>
-                <a href="${c.link}" target="_blank" rel="noopener"
-                   class="text-[var(--mphil-yellow)] underline text-sm mt-1 block">
-                   View details
-                </a>
-              </li>`
-                ).join("") || `<li style="font-size:28px;color:#888;">${t("noMatches")}</li>`
-        }
-      </ul>
-
-      <button class="btn btn-primary btn-sm mb-3" onclick="shareResultImage()">${t("shareImage")}</button>
-      <button class="btn btn-primary btn-sm mb-3" onclick="window.open('https://www.mphil.de/abonnement/infomaterial-bestellen/newsletter','_blank')">
-        ${t("newsletter")}
-      </button>
-      <button class="btn btn-secondary" onclick="renderIntro()">${t("backToStart")}</button>
-
-      ${renderShareCardHTML(archetype, scores, recs, subtype, description)}
-    </div>`;
+                .map((c, idx) => `
+                  <div class="flex-1 min-w-[260px] max-w-[320px] p-5 flex flex-col justify-between"
+                    style="background:${colorList[idx % colorList.length]}; border-radius:0; box-shadow:0 4px 24px 0 rgba(0,0,0,0.10);">
+                    <div>
+                      <div class="text-black text-sm font-bold font-head mb-2">${getDate(c)}, ${getTime(c)} Uhr</div>
+                      <div class="text-black text-base font-normal font-body mb-2">${c.titles}</div>
+                      <div class="text-black text-sm font-bold font-head mb-2">${c.venue}</div>
+                    </div>
+                    <div class="w-full flex flex-col gap-2 mt-2">
+                      <a href="${c.link}" target="_blank" class="w-full p-2.5 bg-black inline-flex justify-center items-center gap-2.5 rounded text-white text-sm font-bold font-head">
+                        TICKET KAUFEN
+                      </a>
+                      <div class="text-black text-xs font-bold font-head">Preise: ${c.price || "siehe Website"}</div>
+                    </div>
+                  </div>
+                `).join("");
+            })()
+          }
+        </div>
+        <button class="btn btn-secondary mt-12" onclick="renderIntro()">${t("backToStart")}</button>
+      </div>
+    </section>
+  `;
 }
 
 /* ────────────────────────────────────────────────────────────
@@ -751,19 +840,6 @@ window.playAudioClip = function(audioPath, btn) {
   audio.play();
 
   audio.onplay = () => {
-    btn.innerHTML = '<i class="fas fa-pause"></i>';
-    btn.title = t('pauseAudio');
-    window._currentAudio = audio;
-  };
-  audio.onpause = () => {
-    btn.innerHTML = '<i class="fas fa-play"></i>';
-    btn.title = t('playAudio');
-    // Don't clear btn._audio so we can resume
-  };
-  audio.onended = () => {
-    btn.innerHTML = '<i class="fas fa-play"></i>';
-    btn.title = t('playAudio');
-    btn._audio = null;
     if (window._currentAudio === audio) window._currentAudio = null;
   };
 };
