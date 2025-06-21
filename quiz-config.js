@@ -27,11 +27,11 @@ export const TRANSLATIONS = {
     tradition:       "Tradition",
     discovery:       "Discovery",
     whichConcertType: "Which concert type are you?",
-    previous:       "Previous",
-    next:           "Next",
-    introShort: "Discover your perfect concert vibe with personalised tips from the Münchner Philharmoniker.",
-    playAudio:      "Play audio",
-    pauseAudio:     "Pause audio"
+    previous:        "Previous",
+    next:            "Next",
+    introShort:      "Discover your perfect concert vibe with personalised tips from the Münchner Philharmoniker.",
+    playAudio:       "Play audio",
+    pauseAudio:      "Pause audio"
   },
   de: {
     discover:        "Entdecken",
@@ -51,11 +51,11 @@ export const TRANSLATIONS = {
     tradition:       "Tradition",
     discovery:       "Entdeckung",
     whichConcertType: "Welcher Konzerttyp sind Sie?",
-    previous:       "Zurück",
-    next:           "Weiter",
-    introShort: "Entdecken Sie Ihre perfekte Konzertstimmung mit persönlichen Tipps der Münchner Philharmoniker.",
-    playAudio:      "Audio abspielen",
-    pauseAudio:     "Audio pausieren"
+    previous:        "Zurück",
+    next:            "Weiter",
+    introShort:      "Entdecken Sie Ihre perfekte Konzertstimmung mit persönlichen Tipps der Münchner Philharmoniker.",
+    playAudio:       "Audio abspielen",
+    pauseAudio:      "Audio pausieren"
   }
 };
 
@@ -71,9 +71,49 @@ export const COLORS = {
   yellow:     "#FEE843",
   black:      "#000",
   white:      "#fff",
+  orange:     "#F6DF00",
   lightYellow:"#fffbe6"
 };
 
+// The color sequence for quiz backgrounds and answer options
+export const COLOR_SEQUENCE = [
+  {
+    bgColor: COLORS.green,      // page background
+    optionBg: COLORS.pink,      // answer background
+    optionText: COLORS.black,
+    optionBorder: COLORS.black
+  },
+  {
+    bgColor: COLORS.pink,
+    optionBg: COLORS.blue,
+    optionText: COLORS.black,
+    optionBorder: COLORS.black
+  },
+  {
+    bgColor: COLORS.blue,
+    optionBg: COLORS.orange,
+    optionText: COLORS.black,
+    optionBorder: COLORS.black
+  },
+  {
+    bgColor: COLORS.orange,
+    optionBg: COLORS.purple,
+    optionText: COLORS.black,
+    optionBorder: COLORS.black
+  },
+  {
+    bgColor: COLORS.purple,
+    optionBg: COLORS.yellow,
+    optionText: COLORS.black,
+    optionBorder: COLORS.black
+  },
+  {
+    bgColor: COLORS.yellow,
+    optionBg: COLORS.black,
+    optionText: COLORS.white,
+    optionBorder: COLORS.black
+  }
+];
 
 /* ────────────────────────────────────────────────────────────
    QUIZ DATA
@@ -81,6 +121,7 @@ export const COLORS = {
 export const DIMENSIONS = ["energy", "tradition"];
 
 export const QUESTIONS = [
+  // 1. Green bg, pink answers, black text
   {
     id: "q1",
     type: "choice",
@@ -88,14 +129,10 @@ export const QUESTIONS = [
       en: "How should a concert make you feel?",
       de: "Wie soll ein Konzert Sie fühlen lassen?"
     },
-    bgColor: COLORS.green,
-    optionBg: COLORS.pink,
-    optionText: COLORS.black,
-    optionBorder: COLORS.black,
-    nextBg: COLORS.yellow,
-    nextText: COLORS.black,
     shapeImg: "assets/shapes/shapes3.png",
     shapePos: "bottom-right",
+    nextBg: COLORS.yellow,
+    nextText: COLORS.black,
     options: [
       {
         value: "energizing",
@@ -119,6 +156,7 @@ export const QUESTIONS = [
       }
     ]
   },
+  // 2. Pink bg, blue answers, black text
   {
     id: "q2",
     type: "choice",
@@ -126,14 +164,10 @@ export const QUESTIONS = [
       en: "What kind of concert vibe do you enjoy?",
       de: "Welche Konzertatmosphäre gefällt Ihnen?"
     },
-    bgColor: COLORS.pink,
-    optionBg: COLORS.yellow,
-    optionText: COLORS.black,
-    optionBorder: COLORS.black,
-    nextBg: COLORS.yellow,
-    nextText: COLORS.black,
     shapeImg: "assets/shapes/shapes4.png",
     shapePos: "bottom-left",
+    nextBg: COLORS.yellow,
+    nextText: COLORS.black,
     options: [
       {
         value: "tradition",
@@ -157,6 +191,7 @@ export const QUESTIONS = [
       }
     ]
   },
+  // 3. Blue bg, orange answers, black text
   {
     id: "q3",
     type: "choice",
@@ -164,14 +199,10 @@ export const QUESTIONS = [
       en: "Who are you most likely to go to a concert with?",
       de: "Mit wem gehen Sie am ehesten ins Konzert?"
     },
-    bgColor: COLORS.blue,
-    optionBg: COLORS.lightYellow,
-    optionText: COLORS.black,
-    optionBorder: COLORS.black,
-    nextBg: COLORS.purple,
-    nextText: COLORS.black,
     shapeImg: "assets/shapes/shapes5.png",
     shapePos: "bottom-right",
+    nextBg: COLORS.purple,
+    nextText: COLORS.black,
     options: [
       { value: "romantic",    label: { en: "A date",   de: "Ein Date"    }, icon: "fas fa-heart"        },
       { value: "connected",   label: { en: "Family",   de: "Familie"     }, icon: "fas fa-users"        },
@@ -179,6 +210,7 @@ export const QUESTIONS = [
       { value: "independent", label: { en: "Alone",    de: "Allein"      }, icon: "fas fa-user"         }
     ]
   },
+  // 4. Orange bg, purple answers, black text
   {
     id: "q4",
     type: "audio",
@@ -186,14 +218,10 @@ export const QUESTIONS = [
       en: "Which song vibe do you like most?",
       de: "Welcher Song-Vibe gefällt Ihnen am meisten?"
     },
-    bgColor: COLORS.yellow,
-    optionBg: COLORS.black,
-    optionText: COLORS.white,
-    optionBorder: COLORS.black,
-    nextBg: COLORS.blue,
-    nextText: COLORS.black,
     shapeImg: "assets/shapes/shapes6.png",
     shapePos: "bottom-left",
+    nextBg: COLORS.blue,
+    nextText: COLORS.black,
     options: [
       {
         value: "boneym",
@@ -241,6 +269,7 @@ export const QUESTIONS = [
       }
     ]
   },
+  // 5. Purple bg, yellow answers, black text
   {
     id: "q5",
     type: "choice",
@@ -248,20 +277,17 @@ export const QUESTIONS = [
       en: "Which time of day do you prefer for concerts?",
       de: "Zu welcher Tageszeit gehen Sie am liebsten ins Konzert?"
     },
-    bgColor: COLORS.purple,
-    optionBg: COLORS.pink,
-    optionText: COLORS.black,
-    optionBorder: COLORS.black,
-    nextBg: COLORS.yellow,
-    nextText: COLORS.black,
     shapeImg: "assets/shapes/shapes7.png",
     shapePos: "bottom-right",
+    nextBg: COLORS.yellow,
+    nextText: COLORS.black,
     options: [
       { value: "evening", label: { en: "Evening", de: "Abends" } },
       { value: "afternoon", label: { en: "Afternoon", de: "Nachmittags" } },
       { value: "morning", label: { en: "Morning", de: "Morgens" } }
     ]
   },
+  // 6. Yellow bg, black answers, white text
   {
     id: "q6",
     type: "choice",
@@ -269,14 +295,10 @@ export const QUESTIONS = [
       en: "Which seat do you prefer?",
       de: "Welchen Sitzplatz bevorzugen Sie?"
     },
-    bgColor: COLORS.yellow,
-    optionBg: COLORS.black,
-    optionText: COLORS.white,
-    optionBorder: COLORS.black,
-    nextBg: COLORS.blue,
-    nextText: COLORS.black,
     shapeImg: "assets/shapes/shapes8.png",
     shapePos: "bottom-left",
+    nextBg: COLORS.blue,
+    nextText: COLORS.black,
     options: [
       { value: "front", label: { en: "Front row", de: "Vorne" } },
       { value: "middle", label: { en: "Middle", de: "Mitte" } },
@@ -323,7 +345,6 @@ export const ARCHETYPES = [
     rule: s => s.energy <= 0 && s.tradition <= 0
   }
 ];
-
 
 export const SUBTYPE_LABEL = {
   romantic:    { en: "Romantic",    de: "Romantisch" },
@@ -409,21 +430,21 @@ export const SUBTYPE_ARCHETYPE_DESCRIPTIONS = {
 
 export const ARCHETYPE_COLORS = {
   connoisseur: {
-    base:  "#F6DF00",
+    base:  COLORS.orange,
     romantic:    "#ffe066",
     connected:   "#ffe699",
     social:      "#fff3bf",
     independent: "#fff9db"
   },
   pioneer: {
-    base:  "#7DD3FC",
+    base:  COLORS.blue,
     romantic:    "#bae6fd",
     connected:   "#38bdf8",
     social:      "#0ea5e9",
     independent: "#0369a1"
   },
   purist: {
-    base:  "#C4B5FD",
+    base:  COLORS.purple,
     romantic:    "#ddd6fe",
     connected:   "#a78bfa",
     social:      "#8b5cf6",
