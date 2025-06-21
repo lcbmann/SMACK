@@ -35,7 +35,7 @@ const PRESETS = {
     connoisseur: { city: "München" },
     pioneer:     { city: "München", early: true },
     purist:      { city: "München" },
-    wanderer:    { city: "München" }
+    bohemian:    { city: "München" }
 };
 
 

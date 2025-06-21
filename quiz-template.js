@@ -108,14 +108,17 @@ function renderQuestion(i) {
   const nextBg       = q.nextBg       || "#FEE843";
   const nextText     = q.nextText     || "#000";
 
-  const hasAnswer = !!answers[q.id];
+  // For multi-select, answers[q.id] is an array; for others, it's a string
+  const isMulti = q.type === "multi";
+  const selectedAnswers = isMulti ? (answers[q.id] || []) : answers[q.id];
+  const hasAnswer = isMulti ? Array.isArray(selectedAnswers) && selectedAnswers.length > 0 : !!selectedAnswers;
 
   // Shape image logic (larger for shapes7 and shapes8)
   let shapeImgHtml = "";
   if (q.shapeImg && q.shapePos) {
-    let width = 140; // default increased size
+    let width = 140;
     if (q.shapeImg.includes("shapes7") || q.shapeImg.includes("shapes8")) {
-      width = 180; // even larger for shapes7 and shapes8
+      width = 180;
     }
     if (q.shapePos === "bottom-right") {
       shapeImgHtml = `<img src="${q.shapeImg}" class="absolute bottom-0 right-0 z-10 pointer-events-none object-contain" style="width:${width}px; height:auto; max-width:40vw;" alt="" />`;
@@ -126,6 +129,88 @@ function renderQuestion(i) {
 
   // Only animate on first render of the question, not on answer selection
   const shouldAnimate = !hasAnswer;
+
+  // AUDIO QUESTION SUPPORT
+  if (q.type === "audio") {
+    quizContainer.innerHTML = /*html*/`
+      <section class="relative w-full min-h-screen overflow-hidden" style="background:${bgColor};">
+        <!-- Small logo in top left -->
+        <img src="assets/logo.png" alt="Logo" class="absolute top-4 left-4 z-20 w-12 h-12 object-contain pointer-events-none" />
+        ${shapeImgHtml}
+        <div class="flex flex-col items-center w-full min-h-screen pt-24 pb-12${shouldAnimate ? ' animate-fadein' : ''}">
+          <div class="mb-4 text-black font-serif" style="font-family:'PP Editorial New',serif;font-size:14px;">
+            ${t("question", i + 1, QUESTIONS.length)}
+          </div>
+          <div class="mb-8 w-full flex justify-center">
+            <h3 class="text-black text-2xl sm:text-3xl font-serif text-center mx-auto max-w-xs" style="font-family:'PP Editorial New',serif;font-weight:400;">
+              ${q.text[LANG]}
+            </h3>
+          </div>
+          <div class="w-full flex flex-wrap justify-center gap-6 mb-16 mt-8">
+            ${q.options.map((opt, idx) => {
+              const selected = selectedAnswers === opt.value;
+              const description = opt.description?.[LANG] ? `<div class="text-xs text-gray-600 mt-2">${opt.description[LANG]}</div>` : "";
+              return `
+                <div class="relative inline-block" style="width: 150px; min-height: 180px;">
+                  <div class="relative group">
+                    <img src="${opt.img}" alt="${opt.label[LANG]}" class="w-full h-24 object-cover border-2 ${selected ? 'border-yellow-300' : 'border-transparent'}" style="border-radius:0;">
+                    <button
+                      type="button"
+                      class="absolute top-2 left-2 bg-black/70 text-white rounded-full p-2 z-10"
+                      onclick="event.stopPropagation(); playAudioClip('${opt.audio}', this);"
+                      title="${t('playAudio')}"
+                      tabindex="-1"
+                    >
+                      <i class="fas fa-play"></i>
+                    </button>
+                    <button
+                      class="absolute inset-0 w-full h-full opacity-0"
+                      onclick="selectAnswer('${q.id}','${opt.value}',${i},false)"
+                      tabindex="-1"
+                    ></button>
+                  </div>
+                  <button
+                    class="w-full border px-4 py-4 flex flex-col items-center justify-center font-bold font-head text-[14px] text-center transition cursor-pointer"
+                    style="
+                      background: ${selected ? bgColor : optionBg};
+                      color: ${selected ? '#000' : optionText};
+                      border-color: ${optionBorder};
+                      border-radius: 0;
+                      outline: ${selected ? '4px solid rgba(254,232,67,0.45)' : 'none'};
+                      outline-offset: 2px;
+                      margin-top: 0;
+                    "
+                    onclick="selectAnswer('${q.id}','${opt.value}',${i},false)"
+                  >
+                    <span>${opt.label[LANG]}</span>
+                    ${description}
+                  </button>
+                </div>
+              `;
+            }).join("")}
+          </div>
+        </div>
+        <div class="absolute left-0 w-full flex justify-between px-8 z-20" style="bottom: 140px;">
+          <button
+            class="rounded font-bold font-head px-5 py-2 text-[14px] transition
+              ${i === 0 ? 'opacity-50 pointer-events-none' : ''}"
+            style="background:${nextBg};color:${nextText};"
+            onclick="goBack()"
+            ${i === 0 ? 'disabled' : ''}
+          >&lt; ${t("previous")}</button>
+          <button
+            class="rounded font-bold font-head px-5 py-2 text-[14px] transition
+              ${hasAnswer ? '' : 'opacity-50 pointer-events-none'}"
+            style="background:${nextBg};color:${nextText};"
+            id="next-btn"
+            onclick="goNext(${i})"
+            ${hasAnswer ? '' : 'disabled'}
+          >${t("next")} &gt;</button>
+        </div>
+      </section>
+    `;
+    return;
+  }
 
   quizContainer.innerHTML = /*html*/`
     <section class="relative w-full min-h-screen overflow-hidden" style="background:${bgColor};">
@@ -151,14 +236,17 @@ function renderQuestion(i) {
         <!-- Answer options (lowered with mt-8) -->
         <div class="w-full flex flex-wrap justify-center gap-6 mb-16 mt-8">
           ${q.options.map((opt, idx) => {
-            const selected = answers[q.id] === opt.value;
+            const selected = isMulti
+              ? Array.isArray(selectedAnswers) && selectedAnswers.includes(opt.value)
+              : selectedAnswers === opt.value;
             // If selected, render a black "shadow" div behind the button
+            const description = opt.description?.[LANG] ? `<div class="text-xs text-gray-600 mt-2">${opt.description[LANG]}</div>` : "";
             return selected ? `
               <span class="relative inline-block" style="width: 150px; min-height: 108px;">
                 <span class="absolute top-1 left-1 w-full h-full bg-black" style="width: 150px; min-height: 108px; border-radius:0; z-index:0;"></span>
                 <button
                   class="
-                    border px-4 py-8 flex items-center justify-center
+                    border px-4 py-8 flex flex-col items-center justify-center
                     font-bold font-head text-[14px] text-center transition cursor-pointer
                   "
                   style="
@@ -169,18 +257,18 @@ function renderQuestion(i) {
                     border-color: ${optionBorder};
                     border-radius: 0;
                     z-index:1;
-                    outline: 4px solid rgba(254,232,67,0.45);
                     outline-offset: 2px;
                   "
-                  onclick="selectAnswer('${q.id}','${opt.value}',${i})"
+                  onclick="selectAnswer('${q.id}','${opt.value}',${i},${isMulti})"
                 >
-                  ${opt.label[LANG]}
+                  <span>${opt.label[LANG]}</span>
+                  ${description}
                 </button>
               </span>
             ` : `
               <button
                 class="
-                  border px-4 py-8 flex items-center justify-center
+                  border px-4 py-8 flex flex-col items-center justify-center
                   font-bold font-head text-[14px] text-center transition cursor-pointer
                   hover:shadow-lg hover:-translate-y-1 active:translate-y-0.5
                   focus:outline-none focus:ring-2 focus:ring-[#FEE843]
@@ -192,9 +280,10 @@ function renderQuestion(i) {
                   border-color: ${optionBorder};
                   border-radius: 0;
                 "
-                onclick="selectAnswer('${q.id}','${opt.value}',${i})"
+                onclick="selectAnswer('${q.id}','${opt.value}',${i},${isMulti})"
               >
-                ${opt.label[LANG]}
+                <span>${opt.label[LANG]}</span>
+                ${description}
               </button>
             `;
           }).join("")}
@@ -221,6 +310,26 @@ function renderQuestion(i) {
       </div>
     </section>
   `;
+}
+
+// Update selectAnswer to handle multi-select
+function selectAnswer(id, val, idx, isMulti = false) {
+  const q = QUESTIONS[idx];
+  if (q && q.type === "multi") {
+    if (!Array.isArray(answers[id])) answers[id] = [];
+    const arr = answers[id];
+    const i = arr.indexOf(val);
+    if (i === -1) {
+      arr.push(val);
+    } else {
+      arr.splice(i, 1);
+    }
+    // Do not auto-advance for multi-select, just re-render
+    renderQuestion(idx);
+  } else {
+    answers[id] = val;
+    renderQuestion(idx);
+  }
 }
 
 function renderByType(q) {
@@ -273,10 +382,6 @@ function renderByType(q) {
 /* ────────────────────────────────────────────────────────────
    3.  STATE + NAVIGATION
    ────────────────────────────────────────────────────────────*/
-function selectAnswer(id, val, idx) {
-  answers[id] = val;
-  if (QUESTIONS[idx].type !== "text") renderQuestion(idx);
-}
 
 function handleTextInput(id, el) {
   answers[id] = el.value;
@@ -638,3 +743,50 @@ document.addEventListener("click", function(e) {
     dd.classList.add("hidden");
   }
 });
+
+// Add this function to handle audio playback
+window.playAudioClip = function(audioPath, btn) {
+  // If this button is already playing, pause it
+  if (btn._audio && !btn._audio.paused) {
+    btn._audio.pause();
+    return;
+  }
+
+  // Pause any currently playing audio from another button
+  if (window._currentAudio && !window._currentAudio.paused) {
+    window._currentAudio.pause();
+  }
+
+  // If this button has an audio object but it's paused, play it from start
+  if (btn._audio) {
+    btn._audio.currentTime = 0;
+    btn._audio.play();
+    return;
+  }
+
+  // Otherwise, play new audio
+  const audio = new Audio(audioPath);
+  btn._audio = audio;
+  audio._btn = btn;
+  window._currentAudio = audio;
+  btn.innerHTML = '<i class="fas fa-pause"></i>';
+  btn.title = t('pauseAudio');
+  audio.play();
+
+  audio.onplay = () => {
+    btn.innerHTML = '<i class="fas fa-pause"></i>';
+    btn.title = t('pauseAudio');
+    window._currentAudio = audio;
+  };
+  audio.onpause = () => {
+    btn.innerHTML = '<i class="fas fa-play"></i>';
+    btn.title = t('playAudio');
+    // Don't clear btn._audio so we can resume
+  };
+  audio.onended = () => {
+    btn.innerHTML = '<i class="fas fa-play"></i>';
+    btn.title = t('playAudio');
+    btn._audio = null;
+    if (window._currentAudio === audio) window._currentAudio = null;
+  };
+};

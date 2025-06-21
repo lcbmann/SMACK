@@ -30,6 +30,8 @@ export const TRANSLATIONS = {
     previous:       "Previous",
     next:           "Next",
     introShort: "Discover your perfect concert vibe with personalised tips from the Münchner Philharmoniker.",
+    playAudio:      "Play audio",
+    pauseAudio:     "Pause audio"
   },
   de: {
     discover:        "Entdecken",
@@ -49,9 +51,11 @@ export const TRANSLATIONS = {
     tradition:       "Tradition",
     discovery:       "Entdeckung",
     whichConcertType: "Welcher Konzerttyp sind Sie?",
-    previous:       "Vorherige",
-    next:           "Nächste",
-    introShort: "Entdecken Sie Ihr perfektes Konzerterlebnis mit persönlichen Tipps der Münchner Philharmoniker.",
+    previous:       "Zurück",
+    next:           "Weiter",
+    introShort: "Entdecken Sie Ihre perfekte Konzertstimmung mit persönlichen Tipps der Münchner Philharmoniker.",
+    playAudio:      "Audio abspielen",
+    pauseAudio:     "Audio pausieren"
   }
 };
 
@@ -81,8 +85,8 @@ export const QUESTIONS = [
     id: "q1",
     type: "choice",
     text: {
-      en: "What kind of mood are you in when you go to a concert?",
-      de: "In welcher Stimmung gehen Sie ins Konzert?"
+      en: "How should a concert make you feel?",
+      de: "Wie soll ein Konzert Sie fühlen lassen?"
     },
     bgColor: COLORS.green,
     optionBg: COLORS.pink,
@@ -90,12 +94,12 @@ export const QUESTIONS = [
     optionBorder: COLORS.black,
     nextBg: COLORS.yellow,
     nextText: COLORS.black,
-    shapeImg: "assets/shapes/shapes3.png", // bottom right
+    shapeImg: "assets/shapes/shapes3.png",
     shapePos: "bottom-right",
     options: [
       {
         value: "energizing",
-        label: { en: "Upbeat & Energizing",  de: "Lebhaft & Energetisch" },
+        label: { en: "Upbeat & Energized",  de: "Lebhaft & Energetisch" },
         description: {
           en: "Energetic, full of drive",
           de: "Energiegeladen, voller Schwung"
@@ -120,7 +124,7 @@ export const QUESTIONS = [
     type: "choice",
     text: {
       en: "What kind of concert vibe do you enjoy?",
-      de: "Welche Art Konzertatmosphäre gefällt Ihnen?"
+      de: "Welche Konzertatmosphäre gefällt Ihnen?"
     },
     bgColor: COLORS.pink,
     optionBg: COLORS.yellow,
@@ -128,7 +132,7 @@ export const QUESTIONS = [
     optionBorder: COLORS.black,
     nextBg: COLORS.yellow,
     nextText: COLORS.black,
-    shapeImg: "assets/shapes/shapes4.png", // bottom left
+    shapeImg: "assets/shapes/shapes4.png",
     shapePos: "bottom-left",
     options: [
       {
@@ -166,7 +170,7 @@ export const QUESTIONS = [
     optionBorder: COLORS.black,
     nextBg: COLORS.purple,
     nextText: COLORS.black,
-    shapeImg: "assets/shapes/shapes5.png", // bottom right
+    shapeImg: "assets/shapes/shapes5.png",
     shapePos: "bottom-right",
     options: [
       { value: "romantic",    label: { en: "A date",   de: "Ein Date"    }, icon: "fas fa-heart"        },
@@ -177,10 +181,10 @@ export const QUESTIONS = [
   },
   {
     id: "q4",
-    type: "choice",
+    type: "audio",
     text: {
-      en: "Which concert setting do you prefer?",
-      de: "Welches Konzert-Setting bevorzugen Sie?"
+      en: "Which song vibe do you like most?",
+      de: "Welcher Song-Vibe gefällt Ihnen am meisten?"
     },
     bgColor: COLORS.yellow,
     optionBg: COLORS.black,
@@ -188,11 +192,53 @@ export const QUESTIONS = [
     optionBorder: COLORS.black,
     nextBg: COLORS.blue,
     nextText: COLORS.black,
-    shapeImg: "assets/shapes/shapes6.png", // bottom left
+    shapeImg: "assets/shapes/shapes6.png",
     shapePos: "bottom-left",
     options: [
-      { value: "formal",   label: { en: "Formal Hall",   de: "Konzertsaal" }, icon: "fas fa-building" },
-      { value: "casual",   label: { en: "Casual Venue",  de: "Lockerer Ort" }, icon: "fas fa-coffee"  }
+      {
+        value: "boneym",
+        label: { en: "Boney M – Daddy Cool", de: "Boney M – Daddy Cool" },
+        description: {
+          en: "Disco, fun, energetic",
+          de: "Disco, Spaß, energiegeladen"
+        },
+        img: "assets/answers/boneym.png",
+        audio: "audio/boneym.mp3",
+        effects: { energy: +2, tradition: +2 }
+      },
+      {
+        value: "cro",
+        label: { en: "CRO – Einmal um die Welt", de: "CRO – Einmal um die Welt" },
+        description: {
+          en: "Modern, upbeat, catchy",
+          de: "Modern, mitreißend, eingängig"
+        },
+        img: "assets/answers/cro.png",
+        audio: "audio/cro.mp3",
+        effects: { energy: +2, tradition: -2 }
+      },
+      {
+        value: "lana",
+        label: { en: "Lana Del Rey – Video Games", de: "Lana Del Rey – Video Games" },
+        description: {
+          en: "Dreamy, melancholic, atmospheric",
+          de: "Verträumt, melancholisch, atmosphärisch"
+        },
+        img: "assets/answers/lana.png",
+        audio: "audio/lana.mp3",
+        effects: { energy: -2, tradition: -2 }
+      },
+      {
+        value: "adele",
+        label: { en: "Adele – Chasing Pavements", de: "Adele – Chasing Pavements" },
+        description: {
+          en: "Soulful, emotional, powerful",
+          de: "Gefühlvoll, emotional, kraftvoll"
+        },
+        img: "assets/answers/adele.png",
+        audio: "audio/adele.mp3",
+        effects: { energy: -2, tradition: +2 }
+      }
     ]
   },
   {
@@ -208,7 +254,7 @@ export const QUESTIONS = [
     optionBorder: COLORS.black,
     nextBg: COLORS.yellow,
     nextText: COLORS.black,
-    shapeImg: "assets/shapes/shapes7.png", // bottom right
+    shapeImg: "assets/shapes/shapes7.png",
     shapePos: "bottom-right",
     options: [
       { value: "evening", label: { en: "Evening", de: "Abends" } },
@@ -229,7 +275,7 @@ export const QUESTIONS = [
     optionBorder: COLORS.black,
     nextBg: COLORS.blue,
     nextText: COLORS.black,
-    shapeImg: "assets/shapes/shapes8.png", // bottom left
+    shapeImg: "assets/shapes/shapes8.png",
     shapePos: "bottom-left",
     options: [
       { value: "front", label: { en: "Front row", de: "Vorne" } },
@@ -268,8 +314,8 @@ export const ARCHETYPES = [
     rule: s => s.energy <= 0 && s.tradition > 0
   },
   {
-    id: "wanderer",
-    title: { en: "Wanderer", de: "Wanderer" },
+    id: "bohemian",
+    title: { en: "Bohemian", de: "Bohemian" },
     blurb: {
       en: "Reflective & discovery-minded: mellow, modern and open-minded.",
       de: "Besinnlich & offen: entspannt, modern und aufgeschlossen."
@@ -300,7 +346,7 @@ export const SUBTYPE_ARCHETYPE_DESCRIPTIONS = {
       en: "You and your date enjoy deep, timeless classics in an intimate mood.",
       de: "Sie und Ihr Date genießen tiefe, zeitlose Klassiker in intimer Atmosphäre."
     },
-    wanderer: {
+    Bohemian: {
       en: "You and your date love discovering mellow, modern sounds together.",
       de: "Sie und Ihr Date entdecken gern gemeinsam entspannte, moderne Klänge."
     }
@@ -318,7 +364,7 @@ export const SUBTYPE_ARCHETYPE_DESCRIPTIONS = {
       en: "Your family cherishes calm, classic concerts and shared tradition.",
       de: "Ihre Familie schätzt ruhige, klassische Konzerte und gemeinsame Tradition."
     },
-    wanderer: {
+    Bohemian: {
       en: "Your family enjoys relaxed, open-minded evenings with new sounds.",
       de: "Ihre Familie genießt entspannte, aufgeschlossene Abende mit neuen Klängen."
     }
@@ -336,7 +382,7 @@ export const SUBTYPE_ARCHETYPE_DESCRIPTIONS = {
       en: "You and your friends appreciate reflective, classic evenings together.",
       de: "Sie und Ihre Freunde schätzen gemeinsame, besinnliche Klassikerabende."
     },
-    wanderer: {
+    Bohemian: {
       en: "You and your friends love discovering new, chill music scenes.",
       de: "Sie und Ihre Freunde entdecken gern neue, entspannte Musik-Szenerien."
     }
@@ -354,7 +400,7 @@ export const SUBTYPE_ARCHETYPE_DESCRIPTIONS = {
       en: "You find peace in classic, reflective concerts by yourself.",
       de: "Sie finden Ruhe in klassischen, besinnlichen Konzerten – ganz für sich."
     },
-    wanderer: {
+    Bohemian: {
       en: "You enjoy wandering into new, mellow music experiences alone.",
       de: "Sie streifen gern allein durch neue, entspannte Musikerlebnisse."
     }
@@ -383,7 +429,7 @@ export const ARCHETYPE_COLORS = {
     social:      "#8b5cf6",
     independent: "#6d28d9"
   },
-  wanderer: {
+  Bohemian: {
     base:  "#6EE7B7",
     romantic:    "#bbf7d0",
     connected:   "#34d399",
