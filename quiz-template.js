@@ -98,20 +98,16 @@ function renderIntro() {
 function startQuiz() { renderQuestion(0); }
 
 function renderQuestion(i) {
-  // --- FIX 1: Always start with green background for first question ---
-  // Use color sequence based on previous question, but for i=0, use 0 for both
+  // Color cycling
   const colorIdx = i % COLOR_SEQUENCE.length;
-  const prevColorIdx = (i === 0 ? 0 : (i - 1) % COLOR_SEQUENCE.length);
+  const colorSet = COLOR_SEQUENCE[colorIdx];
 
-  // For the first question, use green as the background
-  const bgColor = (i === 0)
-    ? COLOR_SEQUENCE[0].bgColor
-    : COLOR_SEQUENCE[prevColorIdx].optionBg;
-  const optionBg = COLOR_SEQUENCE[colorIdx].optionBg;
-  const optionText = COLOR_SEQUENCE[colorIdx].optionText;
-  const optionBorder = COLOR_SEQUENCE[colorIdx].optionBorder;
-  const nextBg       = COLOR_SEQUENCE[colorIdx].nextBg       || "#FEE843";
-  const nextText     = COLOR_SEQUENCE[colorIdx].nextText     || "#000";
+  const bgColor = colorSet.bgColor;
+  const optionBg = colorSet.optionBg;
+  const optionText = colorSet.optionText;
+  const optionBorder = colorSet.optionBorder;
+  const nextBg = colorSet.nextBg || "#FEE843";
+  const nextText = colorSet.nextText || "#000";
 
   const q = QUESTIONS[i];
   if (!q) return renderResults();
@@ -138,11 +134,10 @@ function renderQuestion(i) {
   // Only animate on first render of the question, not on answer selection
   const shouldAnimate = !hasAnswer;
 
-  // --- FIX 2: Audio question selection feedback ---
+  // --- AUDIO TYPE ---
   if (q.type === "audio") {
     quizContainer.innerHTML = /*html*/`
       <section class="relative w-full min-h-screen overflow-hidden" style="background:${bgColor};">
-        <!-- Small logo in top left -->
         <img src="assets/logo.png" alt="Logo" class="absolute top-4 left-4 z-20 w-12 h-12 object-contain pointer-events-none" />
         ${shapeImgHtml}
         <div class="flex flex-col items-center w-full min-h-screen pt-24 pb-12${shouldAnimate ? ' animate-fadein' : ''}">
@@ -154,7 +149,7 @@ function renderQuestion(i) {
               ${q.text[LANG]}
             </h3>
           </div>
-          <div class="flex flex-col gap-4 w-full max-w-md mx-auto">
+          <div class="flex flex-col gap-4 w-full max-w-md mx-auto px-6">
             ${q.options.map((opt, idx) => {
               const selected = selectedAnswers === opt.value;
               // Always use white text if background is black
@@ -217,15 +212,16 @@ function renderQuestion(i) {
     return;
   }
 
-  // --- SLIDER TYPE: SOCIAL BATTERY ---
+  // --- SLIDER TYPE ---
   if (q.type === "slider") {
-    // Default to 3 if not answered yet
-    const value = typeof answers[q.id] === "number" ? answers[q.id] : 3;
+    if (typeof answers[q.id] !== "number") {
+      answers[q.id] = 3;
+    }
+    const value = answers[q.id];
     const min = 1, max = 6;
 
     quizContainer.innerHTML = /*html*/`
       <section class="relative w-full min-h-screen overflow-hidden" style="background:${bgColor};">
-        <!-- Small logo in top left -->
         <img src="assets/logo.png" alt="Logo" class="absolute top-4 left-4 z-20 w-12 h-12 object-contain pointer-events-none" />
         ${shapeImgHtml}
         <div class="flex flex-col items-center w-full min-h-screen pt-24 pb-12${shouldAnimate ? ' animate-fadein' : ''}">
@@ -238,16 +234,21 @@ function renderQuestion(i) {
             </h3>
           </div>
           <div class="flex flex-col items-center gap-4 w-full max-w-md mx-auto mt-8">
-            <!-- Battery Slider -->
-            <div class="relative flex items-center justify-center" style="height:110px;">
-              <div class="flex items-end gap-0" style="position:relative;">
+            <div
+              class="relative flex items-center justify-center select-none"
+              style="height:110px; width:324px;"
+              id="battery-slider"
+            >
+              <div class="absolute inset-0 z-10" style="cursor:pointer;" id="battery-slider-hitbox"></div>
+              <div class="flex items-end gap-0 relative z-20" style="position:relative;">
                 ${[1,2,3,4,5,6].map(idx => `
                   <div
                     class="flex flex-col items-center"
                     style="margin-right:${idx < 6 ? '0.25rem' : '0'};"
                   >
                     <div
-                      class="transition-all duration-150"
+                      class="transition-all duration-150 battery-cell"
+                      data-idx="${idx}"
                       style="
                         width:48px;
                         height:80px;
@@ -259,13 +260,12 @@ function renderQuestion(i) {
                         justify-content:center;
                         cursor:pointer;
                         position:relative;
+                        user-select:none;
                       "
-                      onclick="setSliderValue('${q.id}',${idx},${i})"
                     ></div>
                     <div class="text-black text-base font-normal font-['PP_Editorial_New'] mt-2">${idx}</div>
                   </div>
                 `).join("")}
-                <!-- Battery Cap SVG (right side) -->
                 <div style="position:absolute;right:-18px;top:18px;">
                   <svg width="15" height="44" viewBox="0 0 15 44" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M0 0H7C11.4183 0 15 3.58172 15 8V36C15 40.4183 11.4183 44 7 44H0V0Z" fill="black"/>
@@ -284,12 +284,121 @@ function renderQuestion(i) {
             ${i === 0 ? 'disabled' : ''}
           >&lt; ${t("previous")}</button>
           <button
-            class="rounded font-bold font-head px-5 py-2 text-[14px] transition
-              ${value ? '' : 'opacity-50 pointer-events-none'}"
+            class="rounded font-bold font-head px-5 py-2 text-[14px] transition"
             style="background:${nextBg};color:${nextText};"
             id="next-btn"
             onclick="goNext(${i})"
-            ${value ? '' : 'disabled'}
+          >${t("next")} &gt;</button>
+        </div>
+      </section>
+    `;
+
+    setTimeout(() => {
+      const slider = document.getElementById("battery-slider");
+      const hitbox = document.getElementById("battery-slider-hitbox");
+      if (!slider || !hitbox) return;
+      let dragging = false;
+
+      function getCellIdxFromEvent(e) {
+        const rect = hitbox.getBoundingClientRect();
+        let clientX;
+        if (e.touches && e.touches.length) {
+          clientX = e.touches[0].clientX;
+        } else {
+          clientX = e.clientX;
+        }
+        const x = clientX - rect.left;
+        const cellWidth = rect.width / 6;
+        let idx = Math.floor(x / cellWidth) + 1;
+        idx = Math.max(1, Math.min(6, idx));
+        return idx;
+      }
+
+      function setFromEvent(e) {
+        if (typeof e.preventDefault === "function") e.preventDefault();
+        const idx = getCellIdxFromEvent(e);
+        if (answers[q.id] !== idx) {
+          answers[q.id] = idx;
+          renderQuestion(i);
+        }
+      }
+
+      hitbox.addEventListener("mousedown", e => {
+        dragging = true;
+        setFromEvent(e);
+      });
+      hitbox.addEventListener("touchstart", e => {
+        dragging = true;
+        setFromEvent(e);
+      }, {passive: false});
+
+      window.addEventListener("mousemove", e => {
+        if (dragging) setFromEvent(e);
+      });
+      window.addEventListener("touchmove", e => {
+        if (dragging) setFromEvent(e);
+      }, {passive: false});
+
+      window.addEventListener("mouseup", () => { dragging = false; });
+      window.addEventListener("touchend", () => { dragging = false; });
+
+      slider.querySelectorAll('.battery-cell').forEach(cell => {
+        cell.addEventListener('click', e => {
+          const idx = Number(cell.getAttribute('data-idx'));
+          answers[q.id] = idx;
+          renderQuestion(i);
+        });
+      });
+    }, 0);
+
+    return;
+  }
+
+  // --- IMAGE TYPE (image-only, no label) ---
+  if (q.type === "image") {
+    quizContainer.innerHTML = /*html*/`
+      <section class="relative w-full min-h-screen overflow-hidden" style="background:${bgColor};">
+        <img src="assets/logo.png" alt="Logo" class="absolute top-4 left-4 z-20 w-12 h-12 object-contain pointer-events-none" />
+        ${shapeImgHtml}
+        <div class="flex flex-col items-center w-full min-h-screen pt-24 pb-12${shouldAnimate ? ' animate-fadein' : ''}">
+          <div class="mb-4 text-black font-serif" style="font-family:'PP Editorial New',serif;font-size:14px;">
+            ${t("question", i + 1, QUESTIONS.length)}
+          </div>
+          <div class="mb-8 w-full flex justify-center">
+            <h3 class="text-black text-2xl sm:text-3xl font-serif text-center mx-auto max-w-xs" style="font-family:'PP Editorial New',serif;font-weight:400;">
+              ${q.text[LANG]}
+            </h3>
+          </div>
+          <div class="w-full flex flex-wrap justify-center gap-6 mb-16 mt-8">
+            ${q.options.map((opt, idx) => {
+              const selected = selectedAnswers === opt.value;
+              return `
+                <button
+                  class="border-4 ${selected ? 'border-yellow-400' : 'border-transparent'} rounded-lg overflow-hidden transition-all duration-150 focus:outline-none"
+                  style="width:140px;height:180px;background:#fff;"
+                  onclick="selectAnswer('${q.id}','${opt.value}',${i},false)"
+                >
+                  <img src="${opt.img}" alt="" class="object-cover w-full h-full" />
+                </button>
+              `;
+            }).join("")}
+          </div>
+        </div>
+        <div class="absolute left-0 w-full flex justify-between px-8 z-20" style="bottom: 140px;">
+          <button
+            class="rounded font-bold font-head px-5 py-2 text-[14px] transition
+              ${i === 0 ? 'opacity-50 pointer-events-none' : ''}"
+            style="background:${nextBg};color:${nextText};"
+            onclick="goBack()"
+            ${i === 0 ? 'disabled' : ''}
+          >&lt; ${t("previous")}</button>
+          <button
+            class="rounded font-bold font-head px-5 py-2 text-[14px] transition
+              ${hasAnswer ? '' : 'opacity-50 pointer-events-none'}"
+            style="background:${nextBg};color:${nextText};"
+            id="next-btn"
+            onclick="goNext(${i})"
+            ${hasAnswer ? '' : 'disabled'}
           >${t("next")} &gt;</button>
         </div>
       </section>
@@ -297,58 +406,47 @@ function renderQuestion(i) {
     return;
   }
 
+  // --- CHOICE TYPE (default) ---
   quizContainer.innerHTML = /*html*/`
     <section class="relative w-full min-h-screen overflow-hidden" style="background:${bgColor};">
-      <!-- Small logo in top left -->
       <img src="assets/logo.png" alt="Logo" class="absolute top-4 left-4 z-20 w-12 h-12 object-contain pointer-events-none" />
-
-      <!-- Per-question shape image -->
       ${shapeImgHtml}
-
       <div class="flex flex-col items-center w-full min-h-screen pt-24 pb-12${shouldAnimate ? ' animate-fadein' : ''}">
-        <!-- Progress text -->
         <div class="mb-4 text-black font-serif" style="font-family:'PP Editorial New',serif;font-size:14px;">
           ${t("question", i + 1, QUESTIONS.length)}
         </div>
-
-        <!-- Question text (higher on the page) -->
         <div class="mb-8 w-full flex justify-center">
           <h3 class="text-black text-2xl sm:text-3xl font-serif text-center mx-auto max-w-xs" style="font-family:'PP Editorial New',serif;font-weight:400;">
             ${q.text[LANG]}
           </h3>
         </div>
-
-        <!-- Answer options (lowered with mt-8) -->
         <div class="w-full flex flex-wrap justify-center gap-6 mb-16 mt-8">
           ${q.options.map((opt, idx) => {
             const selected = isMulti
               ? Array.isArray(selectedAnswers) && selectedAnswers.includes(opt.value)
               : selectedAnswers === opt.value;
             const description = opt.description?.[LANG] ? `<div class="text-xs text-gray-600 mt-2">${opt.description[LANG]}</div>` : "";
-            // Use a fixed height for all answer buttons and their containers
-            const btnWidth = 150;
-            const btnHeight = 108;
             return selected ? `
-              <span class="relative inline-block" style="width: ${btnWidth}px; height: ${btnHeight}px;">
-                <span class="absolute top-1 left-1 w-full h-full bg-black" style="width: ${btnWidth}px; height: ${btnHeight}px; border-radius:0; z-index:0;"></span>
+              <span class="relative inline-block w-full max-w-[180px] min-h-[108px]">
+                <span class="absolute top-1 left-1 w-full h-full bg-black rounded" style="z-index:0;"></span>
                 <button
                   class="
                     border flex flex-col items-center justify-center
-                    font-bold font-head text-[14px] text-center transition cursor-pointer
+                    font-bold font-head text-[14px] text-center transition cursor-pointer w-full min-h-[108px] max-w-[180px] break-words
                   "
                   style="
                     position: relative;
-                    width: ${btnWidth}px; height: ${btnHeight}px; min-height: ${btnHeight}px; max-height: ${btnHeight}px;
                     background: ${bgColor};
                     color: #000;
                     border-color: ${optionBorder};
                     border-radius: 0;
                     z-index:1;
-                    padding: 32px 16px;
+                    padding: 24px 10px;
                   "
                   onclick="selectAnswer('${q.id}','${opt.value}',${i},${isMulti})"
                 >
-                  <span>${opt.label[LANG]}</span>
+                  <span class="mb-2"><i class="${opt.icon || ''} text-2xl"></i></span>
+                  <span class="break-words text-center">${opt.label[LANG]}</span>
                   ${description}
                 </button>
               </span>
@@ -356,29 +454,27 @@ function renderQuestion(i) {
               <button
                 class="
                   border flex flex-col items-center justify-center
-                  font-bold font-head text-[14px] text-center transition cursor-pointer
+                  font-bold font-head text-[14px] text-center transition cursor-pointer w-full min-h-[108px] max-w-[180px] break-words
                   hover:shadow-lg hover:-translate-y-1 active:translate-y-0.5
                   focus:outline-none focus:ring-2 focus:ring-[#FEE843]
                 "
                 style="
-                  width: ${btnWidth}px; height: ${btnHeight}px; min-height: ${btnHeight}px; max-height: ${btnHeight}px;
                   background: ${optionBg};
                   color: ${optionText};
                   border-color: ${optionBorder};
                   border-radius: 0;
-                  padding: 32px 16px;
+                  padding: 24px 10px;
                 "
                 onclick="selectAnswer('${q.id}','${opt.value}',${i},${isMulti})"
               >
-                <span>${opt.label[LANG]}</span>
+                <span class="mb-2"><i class="${opt.icon || ''} text-2xl"></i></span>
+                <span class="break-words text-center">${opt.label[LANG]}</span>
                 ${description}
               </button>
             `;
           }).join("")}
         </div>
       </div>
-
-      <!-- Navigation buttons (raised up further and above shapes) -->
       <div class="absolute left-0 w-full flex justify-between px-8 z-20" style="bottom: 140px;">
         <button
           class="rounded font-bold font-head px-5 py-2 text-[14px] transition
@@ -520,11 +616,19 @@ function computeArchetype() {
 function renderResults() {
   const scores = calcScores();
   const archetype = computeArchetype();
+  const archetypeImg = `assets/archetypes/${archetype.id}.png`; // <-- Add this line
   const subtypeKey = answers.q3;
   const subtype   = SUBTYPE_LABEL[subtypeKey] ? SUBTYPE_LABEL[subtypeKey][LANG] + " " : "";
   const description = SUBTYPE_ARCHETYPE_DESCRIPTIONS[subtypeKey]?.[archetype.id]?.[LANG] || archetype.blurb[LANG];
   const color = ARCHETYPE_COLORS[archetype.id]?.[subtypeKey] || ARCHETYPE_COLORS[archetype.id]?.base || "#ccc";
-  const archetypeImg = `assets/archetypes/${archetype.id}.png`;
+  const baseColor = ARCHETYPE_COLORS[archetype.id]?.base || "#ccc";
+  const archetypeBgTop = darkenHex(baseColor, 0.10) + "f0";
+  const archetypeBgBottom = "#000000"; // pure black
+  const concertBoxColors = [
+  "#FEE843", // yellow
+  "#A49DCC", // purple
+  "#8BC27D", // green
+];
 
   // Get concerts for this archetype using the new filter logic
   const recs = getConcertsForResult(archetype.id, subtypeKey);
@@ -558,7 +662,8 @@ function renderResults() {
 
   // --- SHARE IMAGE BUTTON ---
   quizContainer.innerHTML = /*html*/`
-    <section class="relative w-full min-h-screen flex flex-col items-center justify-center bg-black overflow-hidden">
+    <section class="relative w-full min-h-screen flex flex-col items-center justify-center overflow-hidden"
+         style="background:linear-gradient(180deg,${archetypeBgTop} 0%,${archetypeBgBottom} 100%);">
       <!-- Logo in top left corner -->
       <img src="assets/logo2.png" alt="Logo" class="absolute top-4 left-4 z-30 w-14 h-14 object-contain pointer-events-none" />
       <!-- Two fixed shapes: shapes10.png left, shapes9.png right, at random vertical positions -->
@@ -614,7 +719,7 @@ function renderResults() {
                   .slice(0, 5)
                   .map((c, idx) => `
                     <div class="flex-1 min-w-[260px] max-w-[320px] p-5 flex flex-col justify-between"
-                      style="background:#FEE843; border-radius:0; box-shadow:0 4px 24px 0 rgba(0,0,0,0.10);">
+                      style="background:${concertBoxColors[idx % concertBoxColors.length]}; border-radius:0; box-shadow:0 4px 24px 0 rgba(0,0,0,0.10);">
                       <div>
                         <div class="text-black text-sm font-bold font-head mb-2">${getDate(c)}, ${getTime(c)} Uhr</div>
                         <div class="text-black text-base font-normal font-body mb-2">${c.titles}</div>
@@ -639,7 +744,7 @@ function renderResults() {
         </div>
       </div>
     </section>
-    ${renderShareCardHTML(archetype, subtype, description, recs)}
+    ${renderShareCardHTML(archetype, subtype, description, recs, color)}
   `;
 }
 
@@ -685,16 +790,24 @@ function getTime(c) {
 /* ────────────────────────────────────────────────────────────
    share-card (hidden poster) — identical fonts + layout
    ────────────────────────────────────────────────────────────*/
-function renderShareCardHTML(archetype, subtype, description, recs) {
-  const archetypeImg = `assets/archetypes/${archetype.id}.png`;
+function renderShareCardHTML(archetype, subtype, description, recs, color) {
+  if (!archetype) return ""; // Don't render if missing
+
+  const archetypeImg = `assets/archetypes/${archetype.id}`;
   const concert      = recs && recs.length ? recs[0] : null;
+  const archetypeBg  = color ? color + "22" : "#222222";
+  const archetypeTitle = archetype.title?.[LANG] || "";
+  const concertDate = concert?.date ? getDate(concert) : "";
+  const concertTime = concert?.start ? getTime(concert) : "";
+  const concertTitles = concert?.titles || "";
+  const concertVenue = concert?.venue || "";
+  const concertPrice = concert?.price || "siehe Website";
 
   return /*html*/`
-    <div id="share-card"
-         class="fixed -left-[9999px] top-0 w-[700px] h-[900px] flex items-center justify-center
-                bg-black pointer-events-none z-[9999] font-body">
-
-      <div class="relative w-[600px] bg-[#181818] rounded-[32px] shadow-2xl p-12 flex flex-col items-center">
+  <div id="share-card"
+       class="fixed -left-[9999px] top-0 w-[700px] h-[900px] flex items-center justify-center pointer-events-none z-[9999] font-body"
+       style="background:linear-gradient(0deg,${archetypeBg},#181818 90%);">
+    <div class="relative w-[600px] bg-[#181818] rounded-[32px] shadow-2xl p-12 flex flex-col items-center">
 
         <!-- Logo: keep natural aspect-ratio so it never stretches -->
         <img
@@ -709,7 +822,7 @@ function renderShareCardHTML(archetype, subtype, description, recs) {
             <div class="absolute inset-0 p-[5px] rounded-[20px]
                         bg-[conic-gradient(#FEE843_0deg,#A49DCC_72deg,#8BC27D_144deg,#F7C3D9_216deg,#F6DF00_288deg,#FEE843_360deg)]">
               <div class="w-[160px] h-[245px] rounded-[16px] overflow-hidden bg-white m-auto">
-                <img src="${archetypeImg}" alt="${archetype.title[LANG]}"
+                <img src="${archetypeImg}.png" alt="${archetypeTitle}"
                      class="w-full h-full object-cover" />
               </div>
             </div>
@@ -718,11 +831,11 @@ function renderShareCardHTML(archetype, subtype, description, recs) {
 
         <!-- Title & copy – match results page -->
         <div class="mt-9 text-white text-2xl font-normal font-body text-center">
-          ${subtype}${archetype.title[LANG]}
+          ${subtype || ""}${archetypeTitle}
         </div>
 
         <p class="mt-4 mb-6 text-white text-base font-body text-center max-w-[420px]">
-          ${description}
+          ${description || ""}
         </p>
 
         <!-- “Concert picks” heading -->
@@ -734,16 +847,16 @@ function renderShareCardHTML(archetype, subtype, description, recs) {
           concert ? `
             <div class="w-full bg-[#FEE843] p-4 shadow-lg flex flex-col items-start">
               <div class="text-black text-sm font-head font-bold mb-1">
-                ${getDate(concert)}, ${getTime(concert)} Uhr
+                ${concertDate}${concertTime ? `, ${concertTime} Uhr` : ""}
               </div>
               <div class="text-black text-base font-body mb-1">
-                ${concert.titles}
+                ${concertTitles}
               </div>
               <div class="text-black text-sm font-head font-bold mb-1">
-                ${concert.venue}
+                ${concertVenue}
               </div>
               <div class="text-black text-xs font-head">
-                Preise: ${concert.price || "siehe Website"}
+                Preise: ${concertPrice}
               </div>
             </div>
           ` : `
@@ -794,12 +907,29 @@ function renderMetricsForImage(scores) {
             transition:left 0.3s;
           "></div>
         </div>
-        <div style="text-align:center;font-family:monospace;font-size:20px;color:#444;margin-top:6px;">
+        <div style="text-align:center;font-family=monospace;font-size:20px;color:#444;margin-top:6px;">
           ${Math.abs(val)} ${val === 0 ? "" : (val > 0 ? rightLabel : leftLabel)}
         </div>
       </div>
     `;
   }).join("");
+}
+
+// --- DARKEN HEX COLOR HELPER ---
+function darkenHex(hex, factor = 0.5) {
+  // Accepts #RRGGBB or #RGB
+  let c = hex.replace('#','');
+  if (c.length === 3) c = c.split('').map(x=>x+x).join('');
+  let [r,g,b] = [0,0,0];
+  if (c.length === 6) {
+    r = parseInt(c.slice(0,2),16);
+    g = parseInt(c.slice(2,4),16);
+    b = parseInt(c.slice(4,6),16);
+  }
+  r = Math.round(r * factor);
+  g = Math.round(g * factor);
+  b = Math.round(b * factor);
+  return `#${r.toString(16).padStart(2,'0')}${g.toString(16).padStart(2,'0')}${b.toString(16).padStart(2,'0')}`;
 }
 
 /* ────────────────────────────────────────────────────────────
@@ -865,69 +995,7 @@ window.setLangAndRerender = setLangAndRerender;
 
 document.addEventListener("click", function(e) {
   const btn = document.getElementById("lang-toggle-btn");
-  const dd  = document.getElementById("lang-dropdown");
-  if (!btn || !dd) return;
-  if (btn.contains(e.target)) {
-    dd.classList.toggle("hidden");
-  } else if (!dd.contains(e.target)) {
-    dd.classList.add("hidden");
-  }
 });
-
-// Add this function to handle audio playback
-window.playAudioClip = function(audioPath, btn) {
-  // If this button is already playing, pause it
-  if (btn._audio && !btn._audio.paused) {
-    btn._audio.pause();
-    btn.innerHTML = '<i class="fas fa-play"></i>';
-    btn.title = t('playAudio');
-    return;
-  }
-
-  // Pause any currently playing audio from another button
-  if (window._currentAudio && !window._currentAudio.paused) {
-    if (window._currentAudio._btn) {
-      window._currentAudio._btn.innerHTML = '<i class="fas fa-play"></i>';
-      window._currentAudio._btn.title = t('playAudio');
-    }
-    window._currentAudio.pause();
-  }
-
-  // If this button has an audio object but it's paused, play it from start
-  if (btn._audio) {
-    btn._audio.currentTime = 0;
-    btn._audio.play();
-    btn.innerHTML = '<i class="fas fa-pause"></i>';
-    btn.title = t('pauseAudio');
-    window._currentAudio = btn._audio;
-    return;
-  }
-
-  // Otherwise, play new audio
-  const audio = new Audio(audioPath);
-  btn._audio = audio;
-  audio._btn = btn;
-  window._currentAudio = audio;
-  btn.innerHTML = '<i class="fas fa-pause"></i>';
-  btn.title = t('pauseAudio');
-  audio.play();
-
-  audio.onplay = () => {
-    btn.innerHTML = '<i class="fas fa-pause"></i>';
-    btn.title = t('pauseAudio');
-    window._currentAudio = audio;
-  };
-  audio.onpause = () => {
-    btn.innerHTML = '<i class="fas fa-play"></i>';
-    btn.title = t('playAudio');
-  };
-  audio.onended = () => {
-    btn.innerHTML = '<i class="fas fa-play"></i>';
-    btn.title = t('playAudio');
-    btn._audio = null;
-    if (window._currentAudio === audio) window._currentAudio = null;
-  };
-};
 
 // Add this helper at the bottom of the file (or in the global window assignment section)
 window.setSliderValue = function(id, val, idx) {

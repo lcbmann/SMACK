@@ -121,7 +121,7 @@ export const COLOR_SEQUENCE = [
 export const DIMENSIONS = ["energy", "tradition"];
 
 export const QUESTIONS = [
-  // 1. Green bg, pink answers, black text
+  // 1. How should a concert make you feel?
   {
     id: "q1",
     type: "choice",
@@ -156,7 +156,8 @@ export const QUESTIONS = [
       }
     ]
   },
-  // 2. Social Battery Slider (with energy effect, new question text)
+
+  // 2. Social Battery Slider
   {
     id: "qSocialBattery",
     type: "slider",
@@ -164,12 +165,13 @@ export const QUESTIONS = [
       en: "What's your energy level before a concert?",
       de: "Wie hoch ist Ihr Energielevel vor einem Konzert?"
     },
-    // Add a function to compute effects based on the slider value
+    // The rendering code should default this to 3 and always enable "Next"
     effects: value => ({
       energy: value - 3  // 1 → -2, 3 → 0, 6 → +3
     })
   },
-  // 3. Blue bg, orange answers, black text
+
+  // 3. Who are you most likely to go to a concert with?
   {
     id: "q3",
     type: "choice",
@@ -188,7 +190,8 @@ export const QUESTIONS = [
       { value: "independent", label: { en: "Alone",    de: "Allein"      }, icon: "fas fa-user"         }
     ]
   },
-  // 4. Orange bg, purple answers, black text
+
+  // 4. Which song vibe do you like most? (audio)
   {
     id: "q4",
     type: "audio",
@@ -247,75 +250,100 @@ export const QUESTIONS = [
       }
     ]
   },
-  // 5. Pink bg, blue answers, black text (was q2, now here)
-  {
-    id: "q2",
-    type: "choice",
-    text: {
-      en: "What kind of concert vibe do you enjoy?",
-      de: "Welche Konzertatmosphäre gefällt Ihnen?"
-    },
-    shapeImg: "assets/shapes/shapes4.png",
-    shapePos: "bottom-left",
-    nextBg: COLORS.yellow,
-    nextText: COLORS.black,
-    options: [
-      {
-        value: "tradition",
-        label: { en: "Tradition-Oriented", de: "Traditionsbewusst" },
-        description: {
-          en: "Classic setup, timeless works",
-          de: "Klassischer Rahmen, zeitlose Werke"
-        },
-        icon: "fas fa-university",
-        effects: { tradition: +2 }
-      },
-      {
-        value: "discovery",
-        label: { en: "Open to Discovery", de: "Offen für Neues" },
-        description: {
-          en: "Fresh formats, new works",
-          de: "Frische Formate, neue Werke"
-        },
-        icon: "fas fa-flask",
-        effects: { tradition: -2 }
-      }
-    ]
-  },
-  // 6. Purple bg, yellow answers, black text
+
+  // 5. Time of day preference
   {
     id: "q5",
     type: "choice",
     text: {
-      en: "Which time of day do you prefer for concerts?",
-      de: "Zu welcher Tageszeit gehen Sie am liebsten ins Konzert?"
+      en: "Are you an early bird or a night owl when it comes to concerts?",
+      de: "Sind Sie bei Konzerten eher Frühaufsteher oder Nachteule?"
     },
     shapeImg: "assets/shapes/shapes7.png",
     shapePos: "bottom-right",
-    nextBg: COLORS.yellow,
-    nextText: COLORS.black,
     options: [
-      { value: "evening", label: { en: "Evening", de: "Abends" } },
-      { value: "afternoon", label: { en: "Afternoon", de: "Nachmittags" } },
-      { value: "morning", label: { en: "Morning", de: "Morgens" } }
+      {
+        value: "nightowl",
+        label: { en: "Night owl", de: "Nachteule" },
+        icon: "fa-solid fa-moon"
+      },
+      {
+        value: "earlybird",
+        label: { en: "Early bird", de: "Frühaufsteher" },
+        icon: "fa-solid fa-dove"
+      }
     ]
   },
-  // 7. Yellow bg, black answers, white text
+
+  // 6. With whom would you be most interested in having a conversation? (image only)
   {
     id: "q6",
-    type: "choice",
+    type: "image",
     text: {
-      en: "Which seat do you prefer?",
-      de: "Welchen Sitzplatz bevorzugen Sie?"
+      en: "With whom would you be most interested in having a conversation?",
+      de: "Mit wem würden Sie sich am liebsten unterhalten?"
     },
     shapeImg: "assets/shapes/shapes8.png",
     shapePos: "bottom-left",
     nextBg: COLORS.blue,
     nextText: COLORS.black,
     options: [
-      { value: "front", label: { en: "Front row", de: "Vorne" } },
-      { value: "middle", label: { en: "Middle", de: "Mitte" } },
-      { value: "back", label: { en: "Back", de: "Hinten" } }
+      {
+        value: "connoisseur",
+        img: "assets/answers/connoisseurperson.png",
+        effects: { energy: +2, tradition: +2 }
+      },
+      {
+        value: "pioneer",
+        img: "assets/answers/pioneerperson.png",
+        effects: { energy: +2, tradition: -2 }
+      },
+      {
+        value: "purist",
+        img: "assets/answers/puristperson.png",
+        effects: { energy: -2, tradition: +2 }
+      },
+      {
+        value: "bohemian",
+        img: "assets/answers/bohemianperson.png",
+        effects: { energy: -2, tradition: -2 }
+      }
+    ]
+  },
+
+  // 7. Which artwork fits your concert experience?
+  {
+    id: "q7",
+    type: "image",
+    text: {
+      en: "Which artwork best captures your concert-going vibe?",
+      de: "Welches Kunstwerk passt am besten zu Ihrem Konzerterlebnis?"
+    },
+    shapeImg: "assets/shapes/shapes8.png",
+    shapePos: "bottom-right",
+    nextBg: COLORS.green,
+    nextText: COLORS.black,
+    options: [
+      {
+        value: "connoisseur",
+        img: "assets/answers/connoisseurpainting.png",
+        effects: { energy: +2, tradition: +2 }
+      },
+      {
+        value: "pioneer",
+        img: "assets/answers/pioneerpainting.png",
+        effects: { energy: +2, tradition: -2 }
+      },
+      {
+        value: "purist",
+        img: "assets/answers/puristpainting.png",
+        effects: { energy: -2, tradition: +2 }
+      },
+      {
+        value: "bohemian",
+        img: "assets/answers/bohemianpainting.png",
+        effects: { energy: -2, tradition: -2 }
+      }
     ]
   }
 ];
@@ -463,7 +491,7 @@ export const ARCHETYPE_COLORS = {
     social:      "#8b5cf6",
     independent: "#6d28d9"
   },
-  Bohemian: {
+  bohemian: {
     base:  "#6EE7B7",
     romantic:    "#bbf7d0",
     connected:   "#34d399",
