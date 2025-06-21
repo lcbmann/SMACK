@@ -1,10 +1,11 @@
-/*  concerts-filter.js  – v3
+/*  concerts-filter.js  – v4
     ------------------------------------------------------------
     – city-, early- und occasion-Filter
     – Archetyp/Subtyp-Presets
     – Jedes Konzert erhält ≥ 1 Occasion:
         · Treffer  ➜ passende Tags
         · kein Treffer ➜  ["family","friends","date","alone"]
+    – Numerische TExp/REnergy-Filter pro Archetyp
 ----------------------------------------------------------------*/
 
 //EARLY BIRD STUFF FOR AMELIE
@@ -107,7 +108,7 @@ export function applyFilters(
 
 const ARCHETYPE_PRESETS = {
     connoisseur: { city: "München" },
-    pioneer:     { city: "München", early: true },
+    pioneer:     { city: "München" },
     purist:      { city: "München" },
     bohemian:    { city: "München" }
 };
@@ -126,8 +127,40 @@ export function getConcertsForResult(archetypeId, subtypeKey) {
     const occasion = OCCASION_FOR_SUBTYPE[subtypeKey];
     const preset   = { ...base, ...(occasion && { occasion }) };
 
-    const filtered = applyFilters(CONCERTS, preset);
+    // 1) City / Early / Occasion
+    let filtered = applyFilters(CONCERTS, preset);
 
+    // 2) Numerische TExp / REnergy-Kriterien je Archetyp
+    switch (archetypeId) {
+        case "connoisseur":
+            filtered = filtered.filter(c =>
+                Number(c.TExp) <= 3 &&
+                Number(c.REnergy) >= 4
+            );
+            break;
+        case "pioneer":
+            filtered = filtered.filter(c =>
+                Number(c.TExp) >= 4 &&
+                Number(c.REnergy) >= 4
+            );
+            break;
+        case "purist":
+            filtered = filtered.filter(c =>
+                Number(c.TExp) <= 3 &&
+                Number(c.REnergy) <= 3
+            );
+            break;
+        case "bohemian":
+            filtered = filtered.filter(c =>
+                Number(c.TExp) >= 4 &&
+                Number(c.REnergy) <= 3
+            );
+            break;
+        default:
+            break;
+    }
+
+    // 3) Speichern und zurückgeben
     try {
         localStorage.setItem(
             `mphil-concerts-${archetypeId}-${subtypeKey}`,
