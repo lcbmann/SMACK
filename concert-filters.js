@@ -25,7 +25,7 @@ export const normalize = (s) =>
 const WORDS = {
     family: new RegExp(
         [
-            "familien?", "kinder", "kids?", "kita", "schul", "school",
+            "kammer", "familien", "kinder", "kids?", "kita", "schul", "school", "jugend", "youth",
             "classroom", "jugendchor", "junior", "matinee", "mob", "märchen",
             "tiere", "fabel", "eltern", "großeltern", "märchenkonzert"
         ].join("|"),
@@ -35,15 +35,15 @@ const WORDS = {
     friends: new RegExp(
         [
             "jugend", "youth", "u30", "unter ?30", "uni", "campus", "student",
-            "rainbow", "pride", "late", "afterwork", "open\\s*air",
-            "lounge", "party", "beats?", "club", "x?tra", "freunde"
+            "classroom", "rainbow", "pride", "late", "afterwork", "open\\s*air",
+            "lounge", "party", "beats?", "club", "x?tra", "freunde", "new\\s*year",
         ].join("|"),
         "i"
     ),
 
     date: new RegExp(
         [
-            "klassik am odeonsplatz", "odeonsplatz", "romantic",
+            "kammer", "klassik am odeonsplatz", "odeonsplatz", "romantic",
             "valentin", "candle", "love", "date", "nacht", "night",
             "late", "moon", "silvester", "new\\s*year", "weinachts?"
         ].join("|"),
