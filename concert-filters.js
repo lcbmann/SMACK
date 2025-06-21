@@ -7,6 +7,13 @@
         · kein Treffer ➜  ["family","friends","date","alone"]
 ----------------------------------------------------------------*/
 
+//EARLY BIRD STUFF FOR AMELIE
+import { getIsEarlyBird } from './quiz-config.js';
+// ...
+const isEarlyBird = getIsEarlyBird(answers); // true, false, or undefined
+
+
+
 import { CONCERTS } from "./concerts.js";
 
 /* ───────────────────────────  Utils  ──────────────────────────*/

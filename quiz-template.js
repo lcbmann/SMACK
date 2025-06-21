@@ -420,49 +420,32 @@ function renderQuestion(i) {
             const selected = isMulti
               ? Array.isArray(selectedAnswers) && selectedAnswers.includes(opt.value)
               : selectedAnswers === opt.value;
-            const description = opt.description?.[LANG] ? `<div class="text-xs text-gray-600 mt-2">${opt.description[LANG]}</div>` : "";
-            return selected ? `
-              <span class="relative inline-block w-full max-w-[180px] min-h-[108px]">
-                <span class="absolute top-1 left-1 w-full h-full bg-black rounded" style="z-index:0;"></span>
-                <button
-                  class="
-                    border flex flex-col items-center justify-center
-                    font-bold font-head text-[14px] text-center transition cursor-pointer w-full min-h-[108px] max-w-[180px] break-words
-                  "
-                  style="
-                    position: relative;
-                    background: ${bgColor};
-                    color: #000;
-                    border-color: ${optionBorder};
-                    border-radius: 0;
-                    z-index:1;
-                    padding: 24px 10px;
-                  "
-                  onclick="selectAnswer('${q.id}','${opt.value}',${i},${isMulti})"
-                >
-                  <span class="mb-2"><i class="${opt.icon || ''} text-2xl"></i></span>
-                  <span class="break-words text-center">${opt.label[LANG]}</span>
-                  ${description}
-                </button>
-              </span>
-            ` : `
+            // Always render a description div, even if empty, to reserve space
+            const descText = opt.description?.[LANG] || "";
+            // Set min-height to fit the tallest description you expect (adjust as needed)
+            const description = `<div class="text-xs text-gray-600 mt-2" style="min-height:2em;">${descText}</div>`;
+            return `
               <button
                 class="
                   border flex flex-col items-center justify-center
                   font-bold font-head text-[14px] text-center transition cursor-pointer w-full min-h-[108px] max-w-[180px] break-words
+                  ${selected ? 'ring-4 ring-yellow-300' : ''}
                   hover:shadow-lg hover:-translate-y-1 active:translate-y-0.5
                   focus:outline-none focus:ring-2 focus:ring-[#FEE843]
                 "
                 style="
-                  background: ${optionBg};
-                  color: ${optionText};
+                  background: ${selected ? bgColor : optionBg};
+                  color: ${selected ? '#000' : optionText};
                   border-color: ${optionBorder};
                   border-radius: 0;
                   padding: 24px 10px;
+                  box-shadow: ${selected ? '4px 4px 0 0 #000' : 'none'};
+                  position: relative;
+                  z-index: 1;
                 "
                 onclick="selectAnswer('${q.id}','${opt.value}',${i},${isMulti})"
               >
-                <span class="mb-2"><i class="${opt.icon || ''} text-2xl"></i></span>
+                ${opt.img ? `<img src="${opt.img}" alt="" class="mb-2 w-8 h-8 object-contain" />` : `<span class="mb-2"><i class="${opt.icon || ''} text-2xl"></i></span>`}
                 <span class="break-words text-center">${opt.label[LANG]}</span>
                 ${description}
               </button>
@@ -847,7 +830,7 @@ function renderShareCardHTML(archetype, subtype, description, recs, color) {
               <div class="text-black text-base font-body mb-1">
                 ${concertTitles}
               </div>
-              <div class="text-black text-sm font-head font-bold mb-1">
+              <div class="text-black text-sm font-bold font-head mb-1">
                 ${concertVenue}
               </div>
               <div class="text-black text-xs font-head">

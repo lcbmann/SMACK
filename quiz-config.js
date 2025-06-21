@@ -265,12 +265,14 @@ export const QUESTIONS = [
       {
         value: "nightowl",
         label: { en: "Night owl", de: "Nachteule" },
-        icon: "fa-solid fa-moon"
+        img: "assets/nightowl.png",
+        effects: { earlybird: false }
       },
       {
         value: "earlybird",
         label: { en: "Early bird", de: "Frühaufsteher" },
-        icon: "fa-solid fa-dove"
+        img: "assets/earlybird.png",
+        effects: { earlybird: true }
       }
     ]
   },
@@ -499,3 +501,12 @@ export const ARCHETYPE_COLORS = {
     independent: "#065f46"
   }
 };
+
+export function getIsEarlyBird(answers) {
+  // Returns true for early bird, false for night owl, or undefined if not answered
+  const q = QUESTIONS.find(q => q.id === "q5");
+  if (!q) return undefined;
+  const val = answers?.q5;
+  const opt = q.options.find(o => o.value === val);
+  return opt?.effects?.earlybird;
+}
