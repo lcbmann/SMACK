@@ -1,17 +1,13 @@
-/*  concerts-filter.js  – v6
+/*  concerts-filter.js  – v7
     ------------------------------------------------------------
-    – 1) Archetyp: city, early-bird & numeric TExp/REnergy
+    – 1) Archetyp: city & numeric TExp/REnergy
     – 2) Subtyp: single occasion-regex against every concert
-    – 3) Union both sets (no duplicates) → final return
+    – 3) Union both sets (no duplicates) only if matches found
 ----------------------------------------------------------------*/
 
 import { CONCERTS } from "./concerts.js";
 
 /* ───────────────────────────  Utils  ──────────────────────────*/
-
-// hour < 19 → early-bird
-export const isEarly = (c) =>
-    Number((c?.start ?? "25").split(":")[0]) < 19;
 
 // normalize for city comparison
 export const normalize = (s) =>
@@ -30,44 +26,43 @@ const concatAll = (c) =>
 /* ─────────────── 1) Occasion-Regex per Subtype ──────────────*/
 
 const WORDS = {
-    family: /kammer|familien|kinder|kids?|kita|schul|school|jugend|youth|classroom|jugendchor|junior|matinee|mob|märchen|tiere|fabel|eltern|großeltern|märchenkonzert/i,
-    friends: /jugend|youth|u30|unter ?30|uni|campus|student|classroom|rainbow|pride|late|afterwork|open\s*air|lounge|party|beats?|club|x?tra|freunde|new\s*year/i,
-    date: /kammer|klassik am odeonsplatz|odeonsplatz|romantic|valentin|candle|love|date|nacht|night|late|moon|silvester|new\s*year|weinachts?/i,
-    alone: /kammer|quartett?|quintett?|trio|duo|solo|rezit[ai]l|recital|liederabend|sonate|streich|intim|saal\s*x|hp8/i,
+    family:  /kammer|familien|kinder|kids?|kita|schul|school|jugend|youth|classroom|jugendchor|junior|matinee|mob|märchen|tiere|fabel|eltern|großeltern|märchenkonzert|bach|beethoven|mozart/i,
+    friends: /jugend|youth|u30|unter ?30|uni|campus|student|classroom|rainbow|pride|late|afterwork|open\s*air|lounge|party|beats?|club|x?tra|freunde|new\s*year|vivaldi|handel|haydn/i,
+    date:    /kammer|klassik am odeonsplatz|odeonsplatz|romantic|valentin|candle|love|date|nacht|night|late|moon|silvester|new\s*year|weinachts?|tchaikovsky|schubert/i,
+    alone:   /kammer|quartett?|quintett?|trio|duo|solo|rezit[ai]l|recital|liederabend|sonate|streich|intim|saal\s*x|hp8|mahler|strauss/i,
 };
 
 export const OCCASION_FOR_SUBTYPE = {
-    romantic:    "date",
-    connected:   "family",
-    social:      "friends",
-    independent: "alone"
+    romantic:     "date",
+    connected:    "family",
+    social:       "friends",
+    independent:  "alone"
 };
 
-/* ─────────────── 2) Archetyp-Presets  ───────────────────────*/
+/* ─────────────── 2) Archetyp-Presets ───────────────────────*/
 
 const ARCHETYPE_PRESETS = {
-    connoisseur: { city: "München", early: undefined },
-    pioneer:     { city: "München", early: undefined },
-    purist:      { city: "München", early: undefined },
-    bohemian:    { city: "München", early: undefined },
+    connoisseur: { city: "München" },
+    pioneer:     { city: "München" },
+    purist:      { city: "München" },
+    bohemian:    { city: "München" },
 };
 
 /* ──────────── 3) Main Helper for Quiz  ───────────────────────*/
 
 export function getConcertsForResult(archetypeId, subtypeKey) {
-    // 1) Archetype filters
-    const { city, early } = ARCHETYPE_PRESETS[archetypeId] || {};
+    // 1) Archetyp-Filter: nur City
+    const { city } = ARCHETYPE_PRESETS[archetypeId] || {};
     let base = CONCERTS.filter(c => {
-        const cityOk  = !city  || normalize(c.city) === normalize(city);
-        const earlyOk = early === undefined || (early ? isEarly(c) : !isEarly(c));
-        return cityOk && earlyOk;
+        const cityOk = !city || normalize(c.city) === normalize(city);
+        return cityOk;
     });
 
-    // 2) Numeric TExp / REnergy per archetype
+    // 2) Numerische TExp / REnergy pro Archetyp
     switch (archetypeId) {
         case "connoisseur":
             base = base.filter(c =>
-                Number(c.TExp) <= 3 && Number(c.REnergy) >= 4
+                Number(c.TExp) <= 4 && Number(c.REnergy) >= 4
             );
             break;
         case "pioneer":
@@ -77,39 +72,40 @@ export function getConcertsForResult(archetypeId, subtypeKey) {
             break;
         case "purist":
             base = base.filter(c =>
-                Number(c.TExp) <= 3 && Number(c.REnergy) <= 3
+                Number(c.TExp) <= 4 && Number(c.REnergy) <= 4
             );
             break;
         case "bohemian":
             base = base.filter(c =>
-                Number(c.TExp) >= 4 && Number(c.REnergy) <= 3
+                Number(c.TExp) >= 4 && Number(c.REnergy) <= 4
             );
             break;
         default:
             break;
     }
 
-    // 3) Subtype filter applied to *all* concerts
-    const occasionTag = OCCASION_FOR_SUBTYPE[subtypeKey];
-    const second = occasionTag
+    // 3) Subtyp-Regex über alle Konzerte
+    const occasionTag    = OCCASION_FOR_SUBTYPE[subtypeKey];
+    const subtypeMatches = occasionTag
         ? CONCERTS.filter(c => WORDS[occasionTag].test(concatAll(c)))
         : [];
 
-    // 4) Union both arrays (dedupe by object reference)
-    const union = [...base];
-    for (const c of second) {
-        if (!union.includes(c)) union.push(c);
+    // 4) Union nur wenn es Subtyp-Matches gibt
+    if (subtypeMatches.length > 0) {
+        for (const c of subtypeMatches) {
+            if (!base.includes(c)) base.push(c);
+        }
     }
 
     // 5) Cache (optional)
     try {
         localStorage.setItem(
             `mphil-concerts-${archetypeId}-${subtypeKey}`,
-            JSON.stringify(union)
+            JSON.stringify(base)
         );
-    } catch { /**/ }
+    } catch {}
 
-    return union;
+    return base;
 }
 
 export default { getConcertsForResult };
