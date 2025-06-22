@@ -624,6 +624,25 @@ function renderResults() {
   /* persist */
   saveResult({ archetypeId: archetype.id, recs, answers });
 
+  const timePref = answers.q5; // "earlybird" oder "nightowl"
+
+  // 3) Filter nach Uhrzeit
+  const toISODate = (d) => {
+    const [day, month, year] = d.split(".");
+    return `${year}-${month.padStart(2,"0")}-${day.padStart(2,"0")}`;
+  };
+
+  // 1) Filter nach Zeitpräferenz: exakt vor/nach 19:00
+  const timeFilteredRecs = recs.filter(c => {
+    const isoDate = toISODate(c.date);
+    const startTime = (c.start ?? "00:00:00").slice(0,5); // "HH:MM"
+    const showAt    = new Date(`${isoDate}T${startTime}`);
+    const cutoff    = new Date(`${isoDate}T19:00`);
+
+    if (timePref === "earlybird") return showAt < cutoff;   // **vor** 19:00
+    if (timePref === "nightowl")  return showAt >= cutoff;  // **ab** 19:00
+    return true;
+  });
   // Always use shapes10.png (left) and shapes9.png (right)
   const leftShapeObj = { src: "assets/shapes/shapes10.png", side: "left" };
   const rightShapeObj = { src: "assets/shapes/shapes9.png", side: "right" };
@@ -695,34 +714,48 @@ function renderResults() {
         <div class="w-full flex justify-center">
           <div class="w-56 h-16 mx-auto text-white text-2xl font-normal font-body mb-4 text-center">${t("concertPicks")}</div>
         </div>
-        <div class="flex flex-wrap gap-8 items-stretch justify-center w-full max-w-4xl mb-8">
-          ${
-            recs.length
-              ? recs
-                  .filter(c => new Date(c.date) >= new Date())
-                  .sort((a, b) =>
-                    new Date(`${a.date}T${(a.start ?? "00:00").slice(0,5)}`) -
-                    new Date(`${b.date}T${(b.start ?? "00:00").slice(0,5)}`)
-                  )
-                  .slice(0, 5)
-                  .map((c, idx) => `
-                    <div class="flex-1 min-w-[260px] max-w-[320px] p-5 flex flex-col justify-between"
-                      style="background:${concertBoxColors[idx % concertBoxColors.length]}; border-radius:0; box-shadow:0 4px 24px 0 rgba(0,0,0,0.10);">
-                      <div>
-                        <div class="text-black text-sm font-bold font-head mb-2">${getDate(c)}, ${getTime(c)} Uhr</div>
-                        <div class="text-black text-base font-normal font-body mb-2">${c.titles}</div>
-                        <div class="text-black text-sm font-bold font-head mb-2">${c.venue}</div>
-                      </div>
-                      <div class="w-full flex flex-col gap-2 mt-2">
-                        <a href="${c.link}" target="_blank" class="w-full p-2.5 bg-black inline-flex justify-center items-center gap-2.5 rounded text-white text-sm font-bold font-head">
-                          TICKET KAUFEN
-                        </a>
-                        <div class="text-black text-xs font-bold font-head">Preise: ${c.price || "siehe Website"}</div>
-                      </div>
-                    </div>
-                  `).join("")
-              : `<div class="text-white">${t("noMatches")}</div>`
-          }
+        
+      <div class="flex flex-wrap gap-8 items-stretch justify-center w-full max-w-4xl mb-8">
+              ${
+            timeFilteredRecs.length
+                ? timeFilteredRecs
+                    // a) nur zukünftige Termine
+                    .filter(c => {
+                      const iso = toISODate(c.date);
+                      return new Date(iso) >= new Date();
+                    })
+                    // b) sortiere nach Datum+Uhrzeit
+                    .sort((a, b) => {
+                      const ia = toISODate(a.date) + "T" + (a.start ?? "00:00:00").slice(0,5);
+                      const ib = toISODate(b.date) + "T" + (b.start ?? "00:00:00").slice(0,5);
+                      return new Date(ia) - new Date(ib);
+                    })
+                    // c) maximal 5 anzeigen
+                    .slice(0, 5)
+                    // d) HTML-Renderschnipsel
+                    .map((c, idx) => `
+                        <div class="flex-1 min-w-[260px] max-w-[320px] p-5 flex flex-col justify-between"
+                             style="background:${concertBoxColors[idx % concertBoxColors.length]}; box-shadow:0 4px 24px 0 rgba(0,0,0,0.10);">
+                          <div>
+                            <div class="text-black text-sm font-bold mb-2">
+                              ${getDate(c)}, ${getTime(c)} Uhr
+                            </div>
+                            <div class="text-black text-base mb-2">${c.titles}</div>
+                            <div class="text-black text-sm font-bold mb-2">${c.venue}</div>
+                          </div>
+                          <div class="w-full flex flex-col gap-2 mt-2">
+                            <a href="${c.link}" target="_blank"
+                               class="w-full p-2.5 bg-black inline-flex justify-center items-center gap-2.5 rounded text-white text-sm font-bold">
+                              TICKET KAUFEN
+                            </a>
+                            <div class="text-black text-xs font-bold">
+                              Preise: ${c.price || "siehe Website"}
+                            </div>
+                          </div>
+                        </div>
+                      `).join("")
+                : `<div class="text-white">${t("noMatches")}</div>`
+        }
         </div>
         <div class="flex flex-col items-center gap-4 mt-4">
           <button class="btn btn-primary" onclick="shareResultImage()">
